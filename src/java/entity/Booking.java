@@ -6,13 +6,18 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -24,15 +29,17 @@ import javax.persistence.TemporalType;
  * @author Kristian Nielsen
  */
 @NamedQueries({
-    @NamedQuery(name="Booking.FindAll", query="Select b from Booking b"),
-    @NamedQuery(name="Booking.FindByFlightID", query="Select b from Booking b where b.flightID = :flightID")
+    @NamedQuery(name = "Booking.FindAll", query = "Select b from Booking b"),
+    @NamedQuery(name = "Booking.FindByFlightID", query = "Select b from Booking b where b.flightID = :flightID")
 })
 
 @Entity
 public class Booking implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "BOOKING_ID")
     private Long bookingID;
     private int flightID;
     @Temporal(TemporalType.TIMESTAMP)
@@ -43,11 +50,13 @@ public class Booking implements Serializable {
     private String reserveePhone;
     private String reserveeEmail;
     private int flightTimeInMinutes;
-    @OneToMany(cascade = CascadeType.PERSIST)
-    private List<Passenger> passengers;
-    
-    
-
+//    @OneToMany(cascade = CascadeType.PERSIST)
+    @ElementCollection
+    @CollectionTable(
+            name = "PASSENGER",
+            joinColumns = @JoinColumn(name = "BOOKING_ID")
+    )
+    private List<Passenger> passengers = new ArrayList();
 
     @Override
     public int hashCode() {
@@ -141,8 +150,8 @@ public class Booking implements Serializable {
     public List<Passenger> getPassengers() {
         return passengers;
     }
-    
-    public void addPassenger(Passenger passenger){
+
+    public void addPassenger(Passenger passenger) {
         this.passengers.add(passenger);
     }
 
@@ -157,5 +166,5 @@ public class Booking implements Serializable {
     public void setBookingID(Long bookingID) {
         this.bookingID = bookingID;
     }
-    
+
 }

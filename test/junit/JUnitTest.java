@@ -5,7 +5,10 @@
  */
 package junit;
 
+import entity.Booking;
+import entity.Passenger;
 import entity.SearchEntity;
+import facade.BookingFacade;
 import facade.SearchFacade;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -38,6 +41,9 @@ public class JUnitTest {
         Date travelDate = Calendar.getInstance().getTime();
         travelDate.setTime(now.getTime() + (1000 * 60 * 60 * 24 * 7));
         
+        Date findDate = Calendar.getInstance().getTime();
+        findDate.setTime(now.getTime() + (1000 * 60));
+        
         s.setSearchDate(now);
 
         s.setTravelDate(travelDate);
@@ -47,12 +53,44 @@ public class JUnitTest {
         s.setNumberOfSeats(1);
 
         sf.addSearch(s);
-
+        
+        System.out.println(sf.getSearches().get(0).getTravelDate());
+        
         assertNotNull(sf.getSearches());
-        assertNotNull(sf.getSearchesByDate(now));
+        assertNotNull(sf.getSearchesByDate(findDate));
         assertNotNull(sf.getSearchesByDesination("CPH"));
         assertNotNull(sf.getSearchesByOrigin("STN"));
 
+    }
+    
+    @Test
+    public void bookingFacadeTest() {
+        BookingFacade bf = new BookingFacade();
+        Date travelDate = Calendar.getInstance().getTime();
+        travelDate.setTime(travelDate.getTime() + (1000 * 60 * 60 * 24 * 7));
+        Passenger p1 = new Passenger();
+        Passenger p2 = new Passenger();
+        
+        p1.setFirstName("Dave");
+        p1.setLastName("Williams");
+        p2.setFirstName("Daisy");
+        p2.setLastName("Williams");
+        
+        Booking b = new Booking();
+        b.setDestination("CPH");
+        b.setFlightID(55);
+        b.setFlightTimeInMinutes(120);
+        b.setOrigin("STN");
+        b.setReserveeEmail("email@test.dk");
+        b.setReserveeName("Dave Williams");
+        b.setReserveePhone("10101010");
+        b.setTravelDate(travelDate);
+        b.addPassenger(p1);
+        b.addPassenger(p2);
+        
+        bf.addBooking(b);
+        assertNotNull(bf.getBookings());
+        assertNotNull(bf.getBookingsByFlight(55));
     }
 
     @BeforeClass

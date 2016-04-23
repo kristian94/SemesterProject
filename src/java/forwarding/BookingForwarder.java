@@ -9,6 +9,6 @@ package forwarding;
  *
  * @author Kristian Nielsen
  */
-public class ReservationForwarder {
+public class BookingForwarder {
     
 }
