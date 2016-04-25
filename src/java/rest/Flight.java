@@ -7,8 +7,7 @@ package rest;
 
 import facade.BookingFacade;
 import facade.SearchFacade;
-import forwarding.BookingForwarder;
-import forwarding.FlightForwarder;
+import forwarding.RequestForwarder;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.PathParam;
@@ -31,11 +30,8 @@ public class Flight {
     @Context
     private UriInfo context;
 
+    RequestForwarder rf = new RequestForwarder();
     SearchFacade sf = new SearchFacade();
-    BookingFacade bf = new BookingFacade();
-    FlightForwarder fw = new FlightForwarder();
-    BookingForwarder bfw = new BookingForwarder();
-    
     JsonHelper jh = new JsonHelper();
     
     
@@ -55,8 +51,8 @@ public class Flight {
     @Consumes("application/json")
     @Produces("application/json")
     public String getFlights(String content) {
-        //TODO return proper representation object
-        throw new UnsupportedOperationException();
+        sf.addSearch(jh.toSearch(content));
+        return rf.flightRequest(content);
     }
 
     /**
@@ -64,10 +60,5 @@ public class Flight {
      * @param content representation for the resource
      * @return an HTTP response with content of the updated or created resource.
      */
-    @POST
-    @Consumes("application/json")
-    @Produces("application/json")
-    public void submitBooking(String content) {
-        
-    }
+    
 }

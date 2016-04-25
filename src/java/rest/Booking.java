@@ -19,8 +19,8 @@ import javax.ws.rs.PUT;
  *
  * @author Kristian Nielsen
  */
-@Path("reservation")
-public class Reservation {
+@Path("booking")
+public class Booking {
 
     @Context
     private UriInfo context;
@@ -28,11 +28,11 @@ public class Reservation {
     /**
      * Creates a new instance of Reservation
      */
-    public Reservation() {
+    public Booking() {
     }
 
     /**
-     * Retrieves representation of an instance of rest.Reservation
+     * Retrieves representation of an instance of rest.Booking
      * @return an instance of java.lang.String
      */
     @GET
@@ -43,7 +43,7 @@ public class Reservation {
     }
 
     /**
-     * PUT method for updating or creating an instance of Reservation
+     * PUT method for updating or creating an instance of Booking
      * @param content representation for the resource
      * @return an HTTP response with content of the updated or created resource.
      */

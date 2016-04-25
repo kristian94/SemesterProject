@@ -11,7 +11,7 @@ import java.util.Set;
  *
  * @author Kristian Nielsen
  */
-@javax.ws.rs.ApplicationPath("webresources")
+@javax.ws.rs.ApplicationPath("api")
 public class ApplicationConfig extends javax.ws.rs.core.Application {
 
     @Override
@@ -28,8 +28,9 @@ public class ApplicationConfig extends javax.ws.rs.core.Application {
      * If required, comment out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
+        resources.add(rest.Booking.class);
         resources.add(rest.Flight.class);
-        resources.add(rest.Reservation.class);
+        resources.add(rest.Test.class);
     }
     
 }
