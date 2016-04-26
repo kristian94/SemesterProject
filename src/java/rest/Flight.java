@@ -47,7 +47,7 @@ public class Flight {
 
     
     
-    @GET
+    @POST
     @Consumes("application/json")
     @Produces("application/json")
     public String getFlights(String content) {
@@ -55,10 +55,7 @@ public class Flight {
         return rf.flightRequest(content);
     }
 
-    /**
-     * PUT method for updating or creating an instance of Flight
-     * @param content representation for the resource
-     * @return an HTTP response with content of the updated or created resource.
-     */
+    
+    
     
 }

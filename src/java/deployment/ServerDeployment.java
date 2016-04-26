@@ -15,7 +15,7 @@ import javax.servlet.ServletContextListener;
 public class ServerDeployment implements ServletContextListener {
 
     public static String PU_NAME = "PU-Local";
-    public static String[] AIRLINE_URLS = {};
+    public static String[] AIRLINE_URLS = {"http://angularairline-plaul.rhcloud.com/api/flightinfo","http://angularairline-plaul.rhcloud.com/api/flightinfo"};
     
     @Override
     public void contextInitialized(ServletContextEvent sce) {

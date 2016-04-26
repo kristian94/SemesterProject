@@ -21,24 +21,53 @@ import java.util.logging.Logger;
  *
  * @author Kristian Nielsen
  */
-public class ForwarderCallable implements Callable {
+public class ForwarderCallable implements Callable<String> {
     
     private String url;
     private String body;
+    private String method;
     
-    protected ForwarderCallable(String url, String body){
+    protected ForwarderCallable(String url, String body, String method){
         this.url = url;
         this.body = body;
+        this.method = method;
     }
     
     
     @Override
-    public Object call() throws Exception {
-        return forwardRequest(url, body);
+    public String call() throws Exception {
+        switch(method){
+            case "get":
+                return forwardGetRequest(url);
+                
+            case "post":
+                return forwardPostRequest(url, body);
+        }
+        return null;
     }
     
     
-    private String forwardRequest(String urlString, String body) {
+    private String forwardGetRequest(String urlString) {
+        String result = null;
+        try {
+            URLConnection urlc = new URL(urlString).openConnection();
+            InputStream is = urlc.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+            result = sb.toString();
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(RequestForwarder.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(RequestForwarder.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return result;
+    }
+    
+    private String forwardPostRequest(String urlString, String body) {
         String result = null;
         try {
             URLConnection urlc = new URL(urlString).openConnection();
