@@ -1,17 +1,17 @@
-<div class="container" ng-controller="searchCtrl">
+<div class="container">
     <form class="form-inline">
-		<div class="form-group">
-			<input type="text" ng-model="from" value="" placeholder="From airport" class="form-control">
-		</div>
-		<div class="form-group">
-			<input type="text" ng-model="to" value="" placeholder="Destination airport" class="form-control">
-		</div>
-		<div class="form-group">
-			<input type="date" ng-model="date" value="" class="form-control">
-		</div>
-		<div class="form-group">
-			<input type="number" ng-model="seats" value="" placeholder="Number of seats" class="form-control">
-		</div>
-		<input type="submit" ng-click="search()" class="btn btn-default"></button>
+        <div class="form-group">
+            <input type="text" ng-model="from" value="" placeholder="From airport" class="form-control">
+        </div>
+        <div class="form-group">
+            <input type="text" ng-model="to" value="" placeholder="Destination airport" class="form-control">
+        </div>
+        <div class="form-group">
+            <input type="date" ng-model="date" value="" class="form-control">
+        </div>
+        <div class="form-group">
+            <input type="number" ng-model="seats" value="" placeholder="Number of seats" class="form-control">
+        </div>
+        <button ng-click="search()" class="btn btn-default">Search</button>
     </form>
 </div>
