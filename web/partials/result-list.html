@@ -3,24 +3,36 @@
         <div class="col-md-3">
             <form>
                 <div class="form-group">
+                    <label>Airline</label>
+                    <input class="form-control" type="text" ng-model="searchA.airline" ng-value"">
+                </div>
+                <div class="form-group">
                     <label>Departure airport</label>
-                    <input class="form-control" type="text" ng-model="search.origin">
+                    <input class="form-control" type="text" ng-change="searchUpdate()" ng-model-options="{debounce: 500}" ng-model="search.origin" ng-value="parameters.origin">
                 </div>
                 <div class="form-group">
                     <label>Arrival airport</label>
-                    <input class="form-control" type="text" ng-model="search.destination">
+                    <input class="form-control" type="text" ng-change="searchUpdate()" ng-model-options="{debounce: 500}" ng-model="search.destination"  ng-value="parameters.destination">
                 </div>
                 <div class="form-group">
-                    <label>Price</label>
+                    <label>Date *filter not working*</label>
+                    <input class="form-control" type="date" ng-change="searchUpdate()" ng-model-options="{debounce: 500}" ng-model="date">
+                </div>
+                <div class="form-group">
+                    <label>Number of seats</label>
+                    <input class="form-control" type="number" ng-change="searchUpdate()" ng-model-options="{debounce: 500}" ng-model="search.numberOfSeats" ng-value="parameters.numberOfSeats">
+                </div>
+                <div class="form-group">
+                    <label>Time of day</label>
+                    <input class="form-control" type="time">
+                </div>
+                <div class="form-group">
+                    <label>Max price *exact*</label>
                     <input class="form-control" type="number" ng-model="search.totalPrice">
                 </div>
                 <div class="form-group">
-                    <label>Maximum travel time</label>
+                    <label>Maximum travel time *exact*</label>
                     <input class="form-control" type="number" ng-model="search.traveltime">
-                </div>
-                <div class="form-group">
-                    <label>Date *not working*</label>
-                    <input class="form-control" type="date" ng-model="search.date">
                 </div>
                 <label>
                     Order by
@@ -35,9 +47,11 @@
         </div>
         <div class="col-md-9">
             <ul class="list-group">
-                <div ng-repeat="airline in result">
+                <div ng-repeat="airline in result | filter:searchA">
                     <li class="list-group-item" ng-repeat="flight in airline.flights | filter:search">
                         <ul>
+                            <li>AirlineName:
+                                {{airline.airline}}</li>
                             <li>FlightID:
                                 {{flight.flightID}}</li>
                             <li>NumberOfSeats:

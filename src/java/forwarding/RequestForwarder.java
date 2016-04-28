@@ -53,9 +53,9 @@ public class RequestForwarder {
         urlEnd.append(("/" + json.get("origin").getAsString()));
         try{
             String dest = "/" + json.get("destination").getAsString();
-        if(dest != null) urlEnd.append(dest);
+            if(dest != null) urlEnd.append(dest);
         }catch(NullPointerException ne){
-            
+            System.out.println(ne);
         }
         urlEnd.append(("/" + json.get("date").getAsString()));
         urlEnd.append(("/" + json.get("numberOfSeats").getAsString()));
@@ -77,15 +77,17 @@ public class RequestForwarder {
         
         for(Future<String> fut: results){
             try {
-                
-                array.add(new JsonPrimitive(fut.get()));
+                JsonParser parser = new JsonParser();
+                JsonObject obj = parser.parse(fut.get()).getAsJsonObject();
+                array.add(obj);
+//                array.add(fut.get());
             } catch (InterruptedException ex) {
                 Logger.getLogger(RequestForwarder.class.getName()).log(Level.SEVERE, null, ex);
             } catch (ExecutionException ex) {
                 Logger.getLogger(RequestForwarder.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        return array.toString();
+        return new Gson().toJson(array);
     }
     
     

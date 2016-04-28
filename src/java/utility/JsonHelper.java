@@ -30,10 +30,12 @@ public class JsonHelper {
         Calendar c = Calendar.getInstance();
         
         s.setOrigin(json.get("origin").getAsString());
-        
-        String dest = json.get("destination").getAsString();
-        if(dest != null) s.setDestination(dest);
-        
+        try {
+            String dest = json.get("destination").getAsString();
+            if(dest != null) s.setDestination(dest);
+        }catch(NullPointerException ne){
+            System.out.println(ne);
+        }
         s.setNumberOfSeats(json.get("numberOfSeats").getAsInt());
         
         try {
