@@ -1,16 +1,26 @@
 <!DOCTYPE html>
-<html ng-app="bonierApp">
+<html >
     <head>
         <title>Bonier</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-        <script src="angular-js-min/angular.min.js"></script>
-        <script src="angular-js-min/angular-route.min.js"></script>
+        <!--<script src="angular-js-min/angular.min.js"></script>-->
+        <!--<script src="angular-js-min/angular-route.min.js"></script>-->
+        <script src="bower_components/angular/angular.js"></script>
+        <script src="bower_components/angular-route/angular-route.js"></script>
+        <script src="bower_components/angular-jwt/dist/angular-jwt.js"></script>
+        <script src='bower_components/angular-animate/angular-animate.min.js'></script>
+        <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
         <script src="js/app.js"></script>
+        <script src="js/auth.js"></script>
         <script src="js/controllers.js"></script>
+        <script src="js/factories.js"></script>
+        
+        
+        
     </head>
-    <body>
+    <body ng-app="bonierApp">
         <!-- todo header -->
         <boniernavbar></boniernavbar>
         <div ng-view></div>

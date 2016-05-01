@@ -28,9 +28,16 @@ public class ApplicationConfig extends javax.ws.rs.core.Application {
      * If required, comment out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
+        resources.add(httpErrors.GenericExceptionMapper.class);
+        resources.add(httpErrors.NotFoundExceptionMapper.class);
         resources.add(rest.Booking.class);
+        resources.add(rest.CreateUser.class);
         resources.add(rest.Flight.class);
         resources.add(rest.Test.class);
+        resources.add(security.JWTAuthenticationFilter.class);
+        resources.add(security.Login.class);
+        resources.add(security.NotAuthorizedExceptionMapper.class);
+        resources.add(security.RolesAllowedFilter.class);
     }
     
 }
