@@ -51,7 +51,7 @@ public class Flight {
     @Consumes("application/json")
     @Produces("application/json")
     public String getFlights(String content) {
-        sf.addSearch(jh.toSearch(content));
+//        sf.addSearch(jh.toSearch(content));
         return rf.flightRequest(content);
     }
 

@@ -35,7 +35,7 @@ public class Test {
      * Retrieves representation of an instance of rest.Test
      * @return an instance of java.lang.String
      */
-    @POST
+    @GET
     @Produces("text/html")
     public String getJson() {
         return "(Bodyless) Hello from the API";

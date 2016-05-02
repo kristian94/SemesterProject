@@ -5,6 +5,7 @@
     <class>entity.Booking</class>
     <class>entity.Passenger</class>
     <class>entity.SearchEntity</class>
+    <class>entity.Airline</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/sem3_project?zeroDateTimeBehavior=convertToNull"/>

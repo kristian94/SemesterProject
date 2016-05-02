@@ -30,7 +30,7 @@ import javax.persistence.TemporalType;
  */
 @NamedQueries({
     @NamedQuery(name = "Booking.FindAll", query = "Select b from Booking b"),
-    @NamedQuery(name = "Booking.FindByFlightID", query = "Select b from Booking b where b.flightID = :flightID")
+    @NamedQuery(name = "Booking.FindByFlightNumber", query = "Select b from Booking b where b.flightNumber = :flightNumber")
 })
 
 @Entity
@@ -41,14 +41,12 @@ public class Booking implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "BOOKING_ID")
     private Long bookingID;
-    private int flightID;
+    private int flightNumber;
     @Temporal(TemporalType.TIMESTAMP)
     private Date travelDate;
     private String origin;
     private String destination;
     private String reserveeName;
-    private String reserveePhone;
-    private String reserveeEmail;
     private int flightTimeInMinutes;
 //    @OneToMany(cascade = CascadeType.PERSIST)
     @ElementCollection
@@ -83,12 +81,12 @@ public class Booking implements Serializable {
         return "entity.Booking[ id=" + bookingID + " ]";
     }
 
-    public int getFlightID() {
-        return flightID;
+    public int getFlightNumber() {
+        return flightNumber;
     }
 
-    public void setFlightID(int flightID) {
-        this.flightID = flightID;
+    public void setFlightNumber(int flightNumber) {
+        this.flightNumber = flightNumber;
     }
 
     public Date getTravelDate() {
@@ -121,22 +119,6 @@ public class Booking implements Serializable {
 
     public void setReserveeName(String reserveeName) {
         this.reserveeName = reserveeName;
-    }
-
-    public String getReserveePhone() {
-        return reserveePhone;
-    }
-
-    public void setReserveePhone(String reserveePhone) {
-        this.reserveePhone = reserveePhone;
-    }
-
-    public String getReserveeEmail() {
-        return reserveeEmail;
-    }
-
-    public void setReserveeEmail(String reserveeEmail) {
-        this.reserveeEmail = reserveeEmail;
     }
 
     public int getFlightTimeInMinutes() {

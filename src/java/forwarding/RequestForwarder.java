@@ -6,12 +6,15 @@
 package forwarding;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import deployment.ServerDeployment;
+import entity.Airline;
+import facade.AirlineFacade;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -27,10 +30,12 @@ import java.util.logging.Logger;
  */
 public class RequestForwarder {
 
-    Gson gson = new Gson();
-    JsonParser parser = new JsonParser();
-    
-    ExecutorService ex = Executors.newCachedThreadPool();
+    private Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").
+setPrettyPrinting().create();
+
+    private JsonParser parser = new JsonParser();
+    private AirlineFacade af = new AirlineFacade();
+    private ExecutorService ex = Executors.newCachedThreadPool();
     
     public static void main(String[] args) {
         RequestForwarder rf = new RequestForwarder();
@@ -47,29 +52,28 @@ public class RequestForwarder {
     }
     
     public String flightRequest(String content){
-        StringBuilder urlEnd = new StringBuilder();
-        JsonObject json = (JsonObject) parser.parse(content);
-        System.out.println(json.toString());
-        urlEnd.append(("/" + json.get("origin").getAsString()));
-        try{
-            String dest = "/" + json.get("destination").getAsString();
-            if(dest != null) urlEnd.append(dest);
-        }catch(NullPointerException ne){
-            System.out.println(ne);
-        }
-        urlEnd.append(("/" + json.get("date").getAsString()));
-        urlEnd.append(("/" + json.get("numberOfSeats").getAsString()));
         
-        
-        
-        StringBuilder sb = new StringBuilder();
+        System.out.println(content);
+        System.out.println("idk");
+        String urlEnd = buildFlightUrl(content);
         JsonArray array = new JsonArray();
         List<Future<String>> results = new ArrayList();
-        for(String url: ServerDeployment.AIRLINE_URLS){
-            String fullUrl = url + urlEnd;
+        List<Airline> airlines = af.getAirlines();
+        List<String> airlineNames = new ArrayList();
+        List<String> airlineUrls = new ArrayList();
+
+        for(Airline a: airlines){
+            
+            airlineUrls.add(a.getUrl());
+            String fullUrl = a.getUrl() + urlEnd;
+            if(fullUrl.contains("angularairline")){
+                System.out.println("Angular Airline Detected, fixing url");
+                fullUrl = fullUrl.replaceAll("flights", "flightinfo");
+            }
             try {
-                System.out.println(fullUrl);
-                results.add(ex.submit(new ForwarderCallable(fullUrl, content, "get")));
+                System.out.println("Fetching data from: " +fullUrl);
+                
+                results.add(ex.submit(new ForwarderCallable(fullUrl, content, "GET")));
             } catch (Exception ex) {
                 Logger.getLogger(RequestForwarder.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -77,22 +81,65 @@ public class RequestForwarder {
         
         for(Future<String> fut: results){
             try {
-                JsonParser parser = new JsonParser();
                 JsonObject obj = parser.parse(fut.get()).getAsJsonObject();
+                airlineNames.add(obj.get("airline").getAsString());
                 array.add(obj);
-//                array.add(fut.get());
+                
             } catch (InterruptedException ex) {
                 Logger.getLogger(RequestForwarder.class.getName()).log(Level.SEVERE, null, ex);
             } catch (ExecutionException ex) {
                 Logger.getLogger(RequestForwarder.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        
+        updateAirlines(airlineUrls, airlineNames);
         return new Gson().toJson(array);
     }
     
+    public String bookingRequest(String content){
+        try {
+            StringBuilder fullUrl = new StringBuilder();
+            JsonObject json = (JsonObject) parser.parse(content);
+            Airline a = af.getAirlineByName(json.get("airline").getAsString());
+            
+            fullUrl.append(a.getUrl());
+            fullUrl.append("/flightreservation");
+//            fullUrl.append(("/" + json.get("flightID").getAsString()));
+            
+            
+            
+            Future<String> res = ex.submit(new ForwarderCallable(fullUrl.toString(), content, "POST"));
+            return res.get();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(RequestForwarder.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ExecutionException ex) {
+            Logger.getLogger(RequestForwarder.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "";
+    }
+    
+    private String buildFlightUrl(String json){
+        StringBuilder urlEnd = new StringBuilder();
+        JsonObject jsonOb = (JsonObject) parser.parse(json);
+        urlEnd.append("/flights");
+        urlEnd.append(("/" + jsonOb.get("origin").getAsString()));
+        if(jsonOb.get("destination") != null) {
+            urlEnd.append("/" + jsonOb.get("destination").getAsString());
+        }
+        urlEnd.append(("/" + jsonOb.get("date").getAsString()));
+        urlEnd.append(("/" + jsonOb.get("numberOfSeats").getAsString()));
+        return urlEnd.toString();
+    }
     
     
 
+    private void updateAirlines(List<String> airlineUrls, List<String> airlineNames) {
+        System.out.println("Updating Airlines (names/urls)");
+        int i = 0;
+        while(i < airlineUrls.size() && i < airlineNames.size()){
+            af.updateAirline(airlineNames.get(i), airlineUrls.get(i));
+            i++;
+        }
+    }
     
-
 }

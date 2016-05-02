@@ -21,10 +21,14 @@ import security.IUser;
 })
 public class User implements Serializable, IUser {
   private static final long serialVersionUID = 1L;
-  private String password;  //Pleeeeease dont store me in plain text
+  
   
   @Id
   private String userName;
+  private String password;
+  private String email;
+  private String firstName;
+  private String lastName;
   
   @ManyToMany(cascade = CascadeType.ALL)
   @JoinTable(name = "SystemUser_USERROLE", joinColumns = {

@@ -78,12 +78,10 @@ public class JUnitTest {
         
         Booking b = new Booking();
         b.setDestination("CPH");
-        b.setFlightID(55);
+        b.setFlightNumber(55);
         b.setFlightTimeInMinutes(120);
         b.setOrigin("STN");
-        b.setReserveeEmail("email@test.dk");
         b.setReserveeName("Dave Williams");
-        b.setReserveePhone("10101010");
         b.setTravelDate(travelDate);
         b.addPassenger(p1);
         b.addPassenger(p2);

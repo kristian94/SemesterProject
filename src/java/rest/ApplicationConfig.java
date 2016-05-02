@@ -30,7 +30,7 @@ public class ApplicationConfig extends javax.ws.rs.core.Application {
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(httpErrors.GenericExceptionMapper.class);
         resources.add(httpErrors.NotFoundExceptionMapper.class);
-        resources.add(rest.Booking.class);
+        resources.add(rest.BookingService.class);
         resources.add(rest.CreateUser.class);
         resources.add(rest.Flight.class);
         resources.add(rest.Test.class);
