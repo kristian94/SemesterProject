@@ -47,7 +47,7 @@ public class CreateUser {
         User u = gson.fromJson(content, User.class);
         Role userRole = new Role("User");
         u.AddRole(userRole);
-        if (uf.getUserByUserId(u.getUserName()) != null) {
+        if (uf.getUserByUserName(u.getUserName()) != null) {
             return "userName already exists";
         }
         try {

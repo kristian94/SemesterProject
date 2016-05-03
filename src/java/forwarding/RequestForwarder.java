@@ -51,13 +51,11 @@ setPrettyPrinting().create();
 
     }
     
-    public String flightRequest(String content){
+    public JsonArray flightRequest(String content){
         
-        System.out.println(content);
-        System.out.println("idk");
         String urlEnd = buildFlightUrl(content);
         JsonArray array = new JsonArray();
-        List<Future<String>> results = new ArrayList();
+        List<Future<JsonObject>> results = new ArrayList();
         List<Airline> airlines = af.getAirlines();
         List<String> airlineNames = new ArrayList();
         List<String> airlineUrls = new ArrayList();
@@ -79,11 +77,11 @@ setPrettyPrinting().create();
             }
         }
         
-        for(Future<String> fut: results){
+        for(Future<JsonObject> fut: results){
             try {
-                JsonObject obj = parser.parse(fut.get()).getAsJsonObject();
-                airlineNames.add(obj.get("airline").getAsString());
-                array.add(obj);
+               
+                airlineNames.add(fut.get().get("airline").getAsString());
+                array.add(fut.get());
                 
             } catch (InterruptedException ex) {
                 Logger.getLogger(RequestForwarder.class.getName()).log(Level.SEVERE, null, ex);
@@ -93,10 +91,10 @@ setPrettyPrinting().create();
         }
         
         updateAirlines(airlineUrls, airlineNames);
-        return new Gson().toJson(array);
+        return array;
     }
     
-    public String bookingRequest(String content){
+    public JsonObject bookingRequest(String content){
         try {
             StringBuilder fullUrl = new StringBuilder();
             JsonObject json = (JsonObject) parser.parse(content);
@@ -108,14 +106,14 @@ setPrettyPrinting().create();
             
             
             
-            Future<String> res = ex.submit(new ForwarderCallable(fullUrl.toString(), content, "POST"));
+            Future<JsonObject> res = ex.submit(new ForwarderCallable(fullUrl.toString(), content, "POST"));
             return res.get();
         } catch (InterruptedException ex) {
             Logger.getLogger(RequestForwarder.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ExecutionException ex) {
             Logger.getLogger(RequestForwarder.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return "";
+        return null;
     }
     
     private String buildFlightUrl(String json){

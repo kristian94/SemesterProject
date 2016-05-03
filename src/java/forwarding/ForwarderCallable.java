@@ -5,6 +5,7 @@
  */
 package forwarding;
 
+import com.google.gson.JsonObject;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -30,48 +31,44 @@ import java.util.logging.Logger;
  *
  * @author Kristian Nielsen
  */
-public class ForwarderCallable implements Callable<String> {
+public class ForwarderCallable implements Callable<JsonObject> {
     
     private String url;
     private String body;
     private String method;
     
     protected ForwarderCallable(String url, String body, String method){
-        this.url = url;
+        this.url = url;     
         this.body = body;
         this.method = method;
     }
     
     
     @Override
-    public String call() throws Exception {
+    public JsonObject call() throws Exception {
         switch(method){
             case "GET":
-//                return forwardGetRequest(url);
                 return unirestGet();
             case "POST":
-//                return forwardPostRequest();
-                return unirestPost();
+//                return unirestPost();
         }
         return null;
     }
     
-    public String unirestGet(){
-        
+    public JsonObject unirestGet(){
+        JsonObject jsonResponse = new JsonObject();
         try {
-            HttpResponse<JsonNode> response = Unirest.get(url).asJson();
-            int code = response.getStatus();
-            if(code < 400 && code >= 200){
-                return response.getBody().toString();
-            }
-            else{
-                return response.getStatusText();
-            }
+            HttpResponse<JsonNode> httpResponse = Unirest.get(url).asJson();
+            
+            
+            jsonResponse.addProperty("body", httpResponse.getBody().toString());
+            jsonResponse.addProperty("code", httpResponse.getStatus());
+            
         } catch (UnirestException ex) {
             Logger.getLogger(ForwarderCallable.class.getName()).log(Level.SEVERE, null, ex);
         }
             
-        return "";
+        return jsonResponse;
     }
     
     public String unirestPost(){
@@ -99,59 +96,5 @@ public class ForwarderCallable implements Callable<String> {
             Logger.getLogger(ForwarderCallable.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "";
-    }
-    
-    private String forwardGetRequest() {
-        String result = null;
-        try {
-            
-            
-            
-            
-            
-            URLConnection urlc = new URL(url).openConnection();
-            
-            InputStream is = urlc.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line);
-            }
-            result = sb.toString();
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(RequestForwarder.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(RequestForwarder.class.getName()).log(Level.SEVERE, null, ex);
-            return "";
-        }
-        return result;
-    }
-    
-    private String forwardPostRequest() {
-        String result = null;
-        try {
-            URLConnection urlc = new URL(url).openConnection();
-            urlc.setDoOutput(true);
-            OutputStream os = urlc.getOutputStream();
-            os.write(body.getBytes());
-            InputStream is = urlc.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line);
-            }
-            result = sb.toString();
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(RequestForwarder.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(RequestForwarder.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return result;
-    }
-
-    
-
-    
+    }  
 }

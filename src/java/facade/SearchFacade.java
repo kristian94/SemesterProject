@@ -17,11 +17,11 @@ import javax.persistence.Persistence;
  *
  * @author Kristian Nielsen
  */
-public class SearchFacade implements ISearchFacade {
+public class SearchFacade  {
 
     EntityManagerFactory emf = Persistence.createEntityManagerFactory(ServerDeployment.PU_NAME);
     
-    @Override
+    
     public SearchEntity addSearch(SearchEntity search) {
         EntityManager em = emf.createEntityManager();
         SearchEntity res = null;
@@ -36,7 +36,6 @@ public class SearchFacade implements ISearchFacade {
         return res;
     }
 
-    @Override
     public SearchEntity getSearch(int searchID) {
         EntityManager em = emf.createEntityManager();
         SearchEntity res = null;
@@ -48,7 +47,6 @@ public class SearchFacade implements ISearchFacade {
         return res;
     }
 
-    @Override
     public List<SearchEntity> getSearches() {
         EntityManager em = emf.createEntityManager();
         List<SearchEntity> res = null;
@@ -60,7 +58,6 @@ public class SearchFacade implements ISearchFacade {
         return res;
     }
 
-    @Override
     public List<SearchEntity> getSearchesByDate(Date date) {
         EntityManager em = emf.createEntityManager();
         List<SearchEntity> res = null;
@@ -72,7 +69,6 @@ public class SearchFacade implements ISearchFacade {
         return res;
     }
 
-    @Override
     public List<SearchEntity> getSearchesByOrigin(String IATA) {
         EntityManager em = emf.createEntityManager();
         List<SearchEntity> res = null;
@@ -84,7 +80,6 @@ public class SearchFacade implements ISearchFacade {
         return res;
     }
 
-    @Override
     public List<SearchEntity> getSearchesByDesination(String IATA) {
         EntityManager em = emf.createEntityManager();
         List<SearchEntity> res = null;

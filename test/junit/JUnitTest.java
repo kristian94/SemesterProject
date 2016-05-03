@@ -63,33 +63,6 @@ public class JUnitTest {
 
     }
     
-    @Test
-    public void bookingFacadeTest() {
-        BookingFacade bf = new BookingFacade();
-        Date travelDate = Calendar.getInstance().getTime();
-        travelDate.setTime(travelDate.getTime() + (1000 * 60 * 60 * 24 * 7));
-        Passenger p1 = new Passenger();
-        Passenger p2 = new Passenger();
-        
-        p1.setFirstName("Dave");
-        p1.setLastName("Williams");
-        p2.setFirstName("Daisy");
-        p2.setLastName("Williams");
-        
-        Booking b = new Booking();
-        b.setDestination("CPH");
-        b.setFlightNumber(55);
-        b.setFlightTimeInMinutes(120);
-        b.setOrigin("STN");
-        b.setReserveeName("Dave Williams");
-        b.setTravelDate(travelDate);
-        b.addPassenger(p1);
-        b.addPassenger(p2);
-        
-        bf.addBooking(b);
-        assertNotNull(bf.getBookings());
-        assertNotNull(bf.getBookingsByFlight(55));
-    }
 
     @BeforeClass
     public static void setUpClass() {

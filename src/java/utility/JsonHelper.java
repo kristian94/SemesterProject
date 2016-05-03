@@ -13,6 +13,7 @@ import com.google.gson.JsonParser;
 import entity.Booking;
 import entity.Passenger;
 import entity.SearchEntity;
+import entity.User;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -77,6 +78,11 @@ public class JsonHelper {
         System.out.println("Printing Booking as JsonString:");
         System.out.println(gson.toJson(b));
         return b;
+    }
+
+    public String getUserNameFromJson(String content) {
+        JsonObject jsonObject = (JsonObject) parser.parse(content);
+        return jsonObject.get("userName").getAsString();
     }
 
 }

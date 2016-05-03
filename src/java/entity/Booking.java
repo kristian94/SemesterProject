@@ -18,6 +18,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -30,11 +31,14 @@ import javax.persistence.TemporalType;
  */
 @NamedQueries({
     @NamedQuery(name = "Booking.FindAll", query = "Select b from Booking b"),
-    @NamedQuery(name = "Booking.FindByFlightNumber", query = "Select b from Booking b where b.flightNumber = :flightNumber")
+    @NamedQuery(name = "Booking.FindByFlightNumber", query = "Select b from Booking b where b.flightNumber = :flightNumber"),
+    @NamedQuery(name = "Booking.FindByReserveeName", query = "Select b from Booking b where b.reserveeName = :reserveeName")
 })
 
 @Entity
 public class Booking implements Serializable {
+    @ManyToOne
+    private User user;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -48,6 +52,7 @@ public class Booking implements Serializable {
     private String destination;
     private String reserveeName;
     private int flightTimeInMinutes;
+    
 //    @OneToMany(cascade = CascadeType.PERSIST)
     @ElementCollection
     @CollectionTable(
@@ -147,6 +152,14 @@ public class Booking implements Serializable {
 
     public void setBookingID(Long bookingID) {
         this.bookingID = bookingID;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
 }

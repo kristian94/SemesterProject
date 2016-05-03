@@ -5,9 +5,13 @@
  */
 package rest;
 
+import com.google.gson.Gson;
 import entity.Booking;
+import entity.User;
 import facade.BookingFacade;
+import facade.UserFacade;
 import forwarding.RequestForwarder;
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.PathParam;
@@ -29,27 +33,34 @@ public class BookingService {
 
     RequestForwarder rf = new RequestForwarder();
     BookingFacade bf = new BookingFacade();
+    UserFacade uf = new UserFacade();
     JsonHelper jh = new JsonHelper();
+    Gson gson = new Gson();
     
     @Context
     private UriInfo context;
 
     public BookingService() {
     }
-
+    
+    
+    
     @POST
     @Consumes("application/json")
     @Produces("application/json")
     public String postBooking(String content){
-        String res = rf.bookingRequest(content);
-        
-//        try{
-//            Booking b = jh.jsonToBooking(res);
-//        }catch(NullPointerException ne){
-//            
-//        }
-        return res;
+        User u = uf.getUserByUserName(jh.getUserNameFromJson(content));
+        String result = rf.bookingRequest(content).getAsString();
+        u.addBooking(jh.jsonToBooking(result));
+        return result;
+
     }
     
+    @RolesAllowed("Admin")
+    @GET
+    @Produces("application/json")
+    public String getBookings(){
+        return gson.toJson(bf.getBookings());
+    }
     
 }
