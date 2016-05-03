@@ -1,9 +1,7 @@
 {
-  "name": "AngularSeed for 3. semester Computer Science at cphbusiness",
+  "name": "SemesterProject",
   "version": "0.0.0",
-  "authors": [
-    "LMO <lam@cphbusiness.dk>"
-  ],
+  "authors": [""],
   "description": "Semesterseed for exercises and project",
   "license": "MIT",
   "ignore": [

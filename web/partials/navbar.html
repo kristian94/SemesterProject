@@ -21,21 +21,27 @@
                     <a href="#/flights">*Flights*</a>
                 </li>
             </ul>
-            <ul class="nav navbar-nav navbar-right">
+            <ul class="nav navbar-nav navbar-right" style="margin-left: 15px">
                 <p class="navbar-btn">
                     <a href="#/register" class="btn btn-primary">Sign up</a>
                 </p>
             </ul>
-            <form ng-controller="AppLoginCtrl" class="navbar-form navbar-right" role="form" ng-show="!isAuthenticated" ng-submit="login()">
-                <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Username" ng-model="user.username">
-                </div>
-                <div class="form-group">
-                    <input type="password" class="form-control" placeholder="Password" ng-model="user.password">
-                </div>
-                <button type="submit" class="btn btn-default">Sign in</button>
-            </form>
+            <div ng-controller="AppLoginCtrl">
+                <form class="navbar-form navbar-right" role="form" ng-show="!isAuthenticated" ng-submit="login()">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Username" ng-model="user.username">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" placeholder="Password" ng-model="user.password">
+                    </div>
+                    <button type="submit" class="btn btn-default">Sign in</button>
+                </form>
 
+                <div class="navbar-right" ng-show="isAuthenticated">
+                    <p class="navbar-text">Logged on as: <span ng-bind="username"></span></p>
+                    <button type="submit" class="btn btn-primary navbar-btn" ng-click="logout()">Logout</button>
+                </div>
+            </div>
         </div>
         <!-- /.navbar-collapse -->
     </div>

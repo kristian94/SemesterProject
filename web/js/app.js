@@ -1,7 +1,7 @@
-var bonierApp = angular.module('bonierApp', ['ngRoute',
-  'ngAnimate',
-  'angular-jwt',
-  'ui.bootstrap', 'bonierControllers', 'bonierSecurity', 'bonierFactories']);
+var bonierApp = angular.module('bonierApp', [
+    'ngRoute','ngAnimate','angular-jwt','ui.bootstrap.modal', 'ui.bootstrap.tpls', 'bonierControllers', 'bonierSecurity', 'bonierFactories'
+]);
+
 bonierApp.config(function($routeProvider, $httpProvider) {
     $httpProvider.interceptors.push('AuthInterceptor');
     $routeProvider.
@@ -15,15 +15,16 @@ bonierApp.config(function($routeProvider, $httpProvider) {
     }).
     when('/register', {
         templateUrl: 'partials/registration.html',
-        controller: ''
+        controller: 'formController'
     }).
     otherwise({
         redirectTo: '/start'
     });
 });
+
 bonierApp.directive('boniernavbar', function() {
     return {
-        restrict : 'E',
+        restrict: 'E',
         templateUrl: 'partials/navbar.html'
     };
 });
