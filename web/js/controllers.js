@@ -3,6 +3,7 @@ var baseUrl = "http://localhost:8080/SemesterProject/api/flight"
 app.controller('resultListCtrl', function($scope, $http, searchResultFactory) {
     $scope.result = searchResultFactory.getSearchResult();
     $scope.parameters = searchResultFactory.getSearchParameters();
+    
 
     //make this a service???
     $scope.searchUpdate = function() {
@@ -29,8 +30,23 @@ app.controller('resultListCtrl', function($scope, $http, searchResultFactory) {
 });
 
 app.controller('searchCtrl', function($scope, $http, $location, searchResultFactory) {
+
+    
+    
+    $(document).ready(function(){
+        $('#datepicker').datepicker({
+            minDate: 0,
+            dayNamesMin: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        });
+    });
+    
+    
+    
     $scope.search = function() {
-        var isoDate = new Date($scope.date);
+//        var isoDate = new Date($scope.date);
+        var isoDate = $('#datepicker').datepicker("getDate");
+//        console.log($scope.date);
+        console.log(isoDate);
         // var isoDate = new Date($scope.date).toISOString();
         var searchParameters = {
             "origin": $scope.from,

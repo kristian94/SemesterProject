@@ -1,5 +1,7 @@
 angular.module('bonierSecurity', [])
-        .controller('AppLoginCtrl', function ($scope, $rootScope, $http, $window, $location, $uibModal, jwtHelper, authFactory) {
+        .controller('AppLoginCtrl', function ($scope, $rootScope, $http, $window, $location, $uibModal, jwtHelper, AuthFactory) {
+
+
 
             $rootScope.$on('logOutEvent', function () {
                 $scope.logout();
@@ -42,18 +44,18 @@ angular.module('bonierSecurity', [])
                 }
             });
 
-            clearUserDetails($scope, authFactory);
+            clearUserDetails($scope, AuthFactory);
 
             $scope.login = function () {
                 $http.post('api/login', $scope.user)
                         .success(function (data) {
                             $window.sessionStorage.id_token = data.token;
-                            initializeFromToken($scope, $window.sessionStorage.id_token, jwtHelper, authFactory);
+                            initializeFromToken($scope, $window.sessionStorage.id_token, jwtHelper, AuthFactory);
                             $location.path("#/view1");
                         })
                         .error(function (data) {
                             delete $window.sessionStorage.id_token;
-                            clearUserDetails($scope, authFactory);
+                            clearUserDetails($scope, AuthFactory);
                         });
             };
 
@@ -83,7 +85,7 @@ angular.module('bonierSecurity', [])
             var init = function () {
                 var token = $window.sessionStorage.id_token;
                 if (token) {
-                    initializeFromToken($scope, $window.sessionStorage.id_token, jwtHelper, authFactory);
+                    initializeFromToken($scope, $window.sessionStorage.id_token, jwtHelper, AuthFactory);
                 }
             };
             init();// and fire it after definition
@@ -117,36 +119,36 @@ angular.module('bonierSecurity', [])
 
 
 function initializeFromToken($scope, token, jwtHelper, authFactory) {
-//    $scope.isAuthenticated = true;
-    authFactory.setIsAuthenticated = true;
+    $scope.isAuthenticated = true;
+//    authFactory.setIsAuthenticated = true;
     var tokenPayload = jwtHelper.decodeToken(token);
-//    $scope.username = tokenPayload.username;
-    authFactory.setUsername = tokenPayload.username;
-//    $scope.isAdmin = false;
-    authFactory.setIsAdmin = false;
-//    $scope.isUser = false;
-    authFactory.setIsUser = false;
+    $scope.username = tokenPayload.username;
+//    authFactory.setUsername = tokenPayload.username;
+    $scope.isAdmin = false;
+//    authFactory.setIsAdmin = false;
+    $scope.isUser = false;
+//    authFactory.setIsUser = false;
     tokenPayload.roles.forEach(function (role) {
         if (role === "Admin") {
-//            $scope.isAdmin = true;
-            authFactory.setIsAdmin = true;
+            $scope.isAdmin = true;
+//            authFactory.setIsAdmin = true;
         }
         if (role === "User") {
-//            $scope.isUser = true;
-            authFactory.setIsUser = true;
+            $scope.isUser = true;
+//            authFactory.setIsUser = true;
         }
     });
 }
 
 function clearUserDetails($scope, authFactory) {
-//    $scope.username = "";
-    authFactory.setUsername = "";
-//    $scope.isAuthenticated = false;
-    authFactory.setIsAuthenticated = false;
-//    $scope.isAdmin = false;
-    authFactory.setIsAdmin = false;
-//    $scope.isUser = false;
-    authFactory.setIsUser = false;
+    $scope.username = "";
+//    authFactory.setUsername = "";
+    $scope.isAuthenticated = false;
+//    authFactory.setIsAuthenticated = false;
+    $scope.isAdmin = false;
+//    authFactory.setIsAdmin = false;
+    $scope.isUser = false;
+//    authFactory.setIsUser = false;
 }
 
 
