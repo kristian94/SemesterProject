@@ -43,11 +43,12 @@ app.controller('searchCtrl', function($scope, $http, $location, searchResultFact
 
 
     $scope.search = function() {
-        //        var isoDate = new Date($scope.date);
-        var isoDate = $('#datepicker').datepicker("getDate");
-        //        console.log($scope.date);
+        var year = $('#datepicker').datepicker("getDate").getFullYear();
+        var month = $('#datepicker').datepicker("getDate").getMonth();
+        var day = $('#datepicker').datepicker("getDate").getDate();
+        var isoDate = JSON.stringify(new Date(year,month,day,2));
         console.log(isoDate);
-        // var isoDate = new Date($scope.date).toISOString();
+
         var searchParameters = {
             "origin": $scope.from,
             "destination": $scope.to,

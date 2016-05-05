@@ -5,6 +5,9 @@
  */
 package rest;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import facade.BookingFacade;
 import facade.SearchFacade;
 import forwarding.RequestForwarder;
@@ -52,6 +55,7 @@ public class Flight {
     @Produces("application/json")
     public String getFlights(String content) {
 //        sf.addSearch(jh.toSearch(content));
+        
         return rf.flightRequest(content).getAsString();
     }
 

@@ -52,10 +52,12 @@ angular.module('bonierSecurity', [])
                             $window.sessionStorage.id_token = data.token;
                             initializeFromToken($scope, $window.sessionStorage.id_token, jwtHelper, AuthFactory);
                             $location.path("#");
+                            AuthFactory.setUser({isAuthenticated:$scope.isAuthenticated,isAdmin:$scope.isAdmin,isUser:$scope.isUser,username:$scope.username});
                         })
                         .error(function (data) {
                             delete $window.sessionStorage.id_token;
                             clearUserDetails($scope, AuthFactory);
+                            AuthFactory.resetUser();
                         });
             };
 
@@ -65,6 +67,8 @@ angular.module('bonierSecurity', [])
                 $scope.isUser = false;
                 delete $window.sessionStorage.id_token;
                 $location.path("#");
+                $location.path("/view1");
+                AuthFactory.resetUser();
             };
 
             $rootScope.openErrorModal = function (text) {
@@ -120,33 +124,23 @@ angular.module('bonierSecurity', [])
 
 function initializeFromToken($scope, token, jwtHelper, authFactory) {
     $scope.isAuthenticated = true;
-//    authFactory.setIsAuthenticated = true;
     var tokenPayload = jwtHelper.decodeToken(token);
     $scope.username = tokenPayload.username;
-//    authFactory.setUsername = tokenPayload.username;
     $scope.isAdmin = false;
-//    authFactory.setIsAdmin = false;
     $scope.isUser = false;
-//    authFactory.setIsUser = false;
     tokenPayload.roles.forEach(function (role) {
         if (role === "Admin") {
             $scope.isAdmin = true;
-//            authFactory.setIsAdmin = true;
         }
         if (role === "User") {
             $scope.isUser = true;
-//            authFactory.setIsUser = true;
         }
     });
 }
 
 function clearUserDetails($scope, authFactory) {
     $scope.username = "";
-//    authFactory.setUsername = "";
     $scope.isAuthenticated = false;
-//    authFactory.setIsAuthenticated = false;
     $scope.isAdmin = false;
-//    authFactory.setIsAdmin = false;
     $scope.isUser = false;
-//    authFactory.setIsUser = false;
 }

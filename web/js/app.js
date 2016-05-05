@@ -1,5 +1,5 @@
 var bonierApp = angular.module('bonierApp', [
-    'ngRoute','ngAnimate','angular-jwt','ui.bootstrap.modal', 'ui.bootstrap.tpls', 'bonierControllers', 'bonierSecurity', 'bonierFactories'
+    'ngRoute','ngAnimate','angular-jwt','ui.bootstrap.modal', 'ui.bootstrap.tpls', 'bonierControllers', 'bonierSecurity', 'bonierFactories', 'bonierFilters'
 ]);
 
 bonierApp.config(function($routeProvider, $httpProvider) {

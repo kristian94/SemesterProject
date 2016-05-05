@@ -11,67 +11,29 @@ angular.module('bonierFactories', []).
             return {
                 getInfo: getInfo
             };
-        }).factory('AuthFactory', function () {
+        })
+        .factory('AuthFactory', function () {
 
-    var $scope;
-    var isAuthenticated;
-    var username;
-    var isAdmin;
-    var isUser;
+            var user = {};
 
-    function getScope() {
-        return $scope;
-    }
-    ;
+            function setUser(input){
+                user = input;
+                console.log("current user: ");
+                console.log(user);
+            }
+            
+            function getUser(){
+                return user;
+            }
+            
+            function resetUser(){
+                user = {};
+            }
 
-    function setScope(input) {
-        $scope = input;
-    }
-    ;
+            return {
+                setUser: setUser,
+                getUser: getUser,
+                resetUser: resetUser
+            };
 
-    function getIsAuthenticated() {
-        return isAuthenticated;
-    }
-
-    function getUsername() {
-        return username;
-    }
-
-    function getIsAdmin() {
-        return isAdmin;
-    }
-
-    function getIsUser() {
-        return isUser;
-    }
-
-    function setIsAuthenticated(input) {
-        isAuthenticated = input;
-    }
-
-    function setUsername(input) {
-        username = input;
-    }
-
-    function setIsAdmin(input) {
-        isAdmin = input;
-    }
-
-    function setIsUser(input) {
-        isUser = input;
-    }
-
-    return {
-        getScope: getScope,
-        getIsAuthenticated: getIsAuthenticated,
-        getUsername: getUsername,
-        getIsAdmin: getIsAdmin,
-        getIsUser: getIsUser,
-        setScope: setScope,
-        setIsAuthenticated: setIsAuthenticated,
-        setUsername: setUsername,
-        setIsAdmin: setIsAdmin,
-        setIsUser: setIsUser
-    };
-
-});
+        });

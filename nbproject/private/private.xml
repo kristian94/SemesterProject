@@ -4,28 +4,26 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/src/java/rest/Test.java</file>
-            <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/test/junit/JUnitTest.java</file>
             <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/src/java/forwarding/RequestForwarder.java</file>
+            <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/web/partials/result-list.html</file>
             <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/src/java/httpErrors/GenericExceptionMapper.java</file>
             <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/web/js/factories.js</file>
-            <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/src/java/security/Login.java</file>
-            <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/src/java/entity/Airline.java</file>
             <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/src/java/deployment/ServerDeployment.java</file>
-            <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/src/java/entity/Booking.java</file>
             <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/web/js/app.js</file>
             <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/src/java/forwarding/ForwarderCallable.java</file>
-            <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/src/java/deployment/AirlineInfo.java</file>
             <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/src/java/rest/BookingService.java</file>
-            <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/src/java/rest/CreateUser.java</file>
+            <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/web/partials/navbar.html</file>
+            <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/web/js/controllers.js</file>
+            <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/web/partials/error-modal.html</file>
             <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/src/java/utility/JsonHelper.java</file>
             <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/src/java/rest/Flight.java</file>
             <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/src/java/httpErrors/NotFoundExceptionMapper.java</file>
             <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/web/js/auth.js</file>
+            <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/web/js/filters.js</file>
+            <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/src/java/rest/ResponseBuilder.java</file>
             <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/web/index.html</file>
-            <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/src/java/utility/Tester.java</file>
-            <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/src/java/security/NotAuthorizedExceptionMapper.java</file>
-            <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/src/java/facade/AirlineFacade.java</file>
-            <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/src/java/rest/ApplicationConfig.java</file>
+            <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/web/partials/start.html</file>
+            <file>file:/C:/Users/Kristian%20Nielsen/Documents/NetBeansProjects/SemesterProject/web/partials/registration.html</file>
         </group>
     </open-files>
 </project-private>

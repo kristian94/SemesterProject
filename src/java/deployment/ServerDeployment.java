@@ -34,8 +34,9 @@ public class ServerDeployment implements ServletContextListener {
     
     private AirlineFacade af = new AirlineFacade();
     
-    private static String[] AIRLINE_NAMES = {"Angular something"};
-    private static String[] AIRLINE_URLS = {"http://angularairline-plaul.rhcloud.com/api"};
+    private static String[] AIRLINE_NAMES = {"Angular something", "Bonier"};
+    private static String[] AIRLINE_URLS = {"http://angularairline-plaul.rhcloud.com/api", "http://46.101.175.10/api"};
+
     private EntityManagerFactory emf = Persistence.createEntityManagerFactory(PU_NAME);
 
     @Override
