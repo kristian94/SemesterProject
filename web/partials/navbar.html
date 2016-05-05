@@ -1,4 +1,4 @@
-<nav class="navbar navbar-default">
+<nav class="navbar navbar-default" ng-controller="AppLoginCtrl">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
@@ -20,27 +20,33 @@
                 <li>
                     <a href="#/flights">*Flights*</a>
                 </li>
+                <li ng-show="isAuthenticated">
+                    <a href="#/profile">*Profile*</a>
+                </li>
+                <li ng-show="isAdmin">
+                    <a href="#/admin">*Admin*</a>
+                </li>
             </ul>
-            <ul class="nav navbar-nav navbar-right" style="margin-left: 15px">
+            <ul class="nav navbar-nav navbar-right" ng-show="!isAuthenticated">
                 <p class="navbar-btn">
                     <a href="#/register" class="btn btn-primary">Sign up</a>
                 </p>
             </ul>
-            <div ng-controller="AppLoginCtrl">
-                <form class="navbar-form navbar-right" role="form" ng-show="!isAuthenticated" ng-submit="login()">
-                    <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Username" ng-model="user.username">
-                    </div>
-                    <div class="form-group">
-                        <input type="password" class="form-control" placeholder="Password" ng-model="user.password">
-                    </div>
-                    <button type="submit" class="btn btn-default">Sign in</button>
-                </form>
-
-                <div class="navbar-right" ng-show="isAuthenticated">
-                    <p class="navbar-text">Logged on as: <span ng-bind="username"></span></p>
-                    <button type="submit" class="btn btn-primary navbar-btn" ng-click="logout()">Logout</button>
+            <form class="navbar-form navbar-right" role="form" ng-show="!isAuthenticated" ng-submit="login()">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Username" ng-model="user.username">
                 </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" placeholder="Password" ng-model="user.password">
+                </div>
+                <button type="submit" class="btn btn-default">Sign in</button>
+            </form>
+
+            <div class="navbar-right" ng-show="isAuthenticated">
+                <p class="navbar-text">Logged on as:
+                    <span ng-bind="username"></span>
+                </p>
+                <button type="submit" class="btn btn-primary navbar-btn" ng-click="logout()">Logout</button>
             </div>
         </div>
         <!-- /.navbar-collapse -->

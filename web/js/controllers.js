@@ -3,9 +3,9 @@ var baseUrl = "http://localhost:8080/SemesterProject/api/flight"
 app.controller('resultListCtrl', function($scope, $http, searchResultFactory) {
     $scope.result = searchResultFactory.getSearchResult();
     $scope.parameters = searchResultFactory.getSearchParameters();
-    
 
-    //make this a service???
+
+    // todo make this a service
     $scope.searchUpdate = function() {
         var isoDate = new Date($scope.date);
         // var isoDate = new Date($scope.date).toISOString();
@@ -31,21 +31,21 @@ app.controller('resultListCtrl', function($scope, $http, searchResultFactory) {
 
 app.controller('searchCtrl', function($scope, $http, $location, searchResultFactory) {
 
-    
-    
-    $(document).ready(function(){
+
+
+    $(document).ready(function() {
         $('#datepicker').datepicker({
             minDate: 0,
             dayNamesMin: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
         });
     });
-    
-    
-    
+
+
+
     $scope.search = function() {
-//        var isoDate = new Date($scope.date);
+        //        var isoDate = new Date($scope.date);
         var isoDate = $('#datepicker').datepicker("getDate");
-//        console.log($scope.date);
+        //        console.log($scope.date);
         console.log(isoDate);
         // var isoDate = new Date($scope.date).toISOString();
         var searchParameters = {
@@ -56,6 +56,7 @@ app.controller('searchCtrl', function($scope, $http, $location, searchResultFact
         };
         //todo check input before post request
 
+        // todo make this a service
         $http.post(baseUrl, searchParameters)
             .success(function(data, status) {
                 searchResultFactory.saveSearchResult(data);
@@ -73,7 +74,7 @@ app.controller('searchCtrl', function($scope, $http, $location, searchResultFact
 var errorGlyph = '<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> '
 var successGlyph = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span> '
 
-app.controller('formController', ['$scope', '$http', function($scope, $http) {
+app.controller('formController', ['$scope', '$http', function($scope, $http, $window) {
     $scope.create = function(user) {
         $('#registration .alert').remove();
         //validation
@@ -93,14 +94,9 @@ app.controller('formController', ['$scope', '$http', function($scope, $http) {
         }
 
         //creation post call
-        var data = {
-            userName: user.userName,
-            password: user.password,
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName
-        };
-        $http.post('/SemesterProject/api/createuser', data).success(function(data) {
+        //delete user.passwordRep;
+        $http.post('/SemesterProject/api/user', user)
+            .success(function(data) {
             var dataBool = data === "ok";
             $('#registration .alert').remove();
             $('#registration').prepend('<div class="alert ' + (dataBool ? 'alert-success' : 'alert-danger') + '" id="message-box">' + (dataBool ? successGlyph : errorGlyph) + (dataBool ? 'Account created' : 'Username taken') + '</div>');
@@ -133,4 +129,69 @@ app.factory('searchResultFactory', function() {
             return searchParameters;
         }
     };
+});
+
+app.controller('profileCtrl', function($http, $window, jwtHelper, $scope) {
+    var init = function() {
+        var token = $window.sessionStorage.id_token;
+        if (token) {
+            // function in auth.js
+            initializeFromToken($scope, $window.sessionStorage.id_token, jwtHelper);
+        }
+    };
+    init();
+
+    $scope.user = {};
+    $http.get('api/user/' + $scope.username)
+        .success(function(data) {
+            console.log(data);
+            $scope.user = data;
+        })
+        .error(function(data) {
+            console.log(data);
+            console.log("handle this error");
+        });
+
+    /* get bookings
+    $http.get('api/booking')
+        .success(function(data) {
+            console.log(data);
+        })
+        .error(function(data) {
+            console.log(data);
+        });
+    */
+});
+
+app.controller('adminCtrl', function($http, $window, jwtHelper, $scope) {
+    var init = function() {
+        var token = $window.sessionStorage.id_token;
+        if (token) {
+            // function in auth.js
+            initializeFromToken($scope, $window.sessionStorage.id_token, jwtHelper);
+        }
+    };
+    init();
+
+    $scope.users = [];
+    $http.get('api/user/all')
+        .success(function(data) {
+            console.log(data);
+            $scope.users = data;
+        })
+        .error(function(data) {
+            console.log(data);
+        });
+});
+
+app.controller('adminDetailsCtrl', function($scope, $routeParams, $http) {
+    $scope.username = $routeParams.username;
+    //todo get bookings the user in routeParams
+    $http.get('api/booking')
+        .success(function(data) {
+            console.log(data);
+        })
+        .error(function(data) {
+            console.log(data);
+        });
 });

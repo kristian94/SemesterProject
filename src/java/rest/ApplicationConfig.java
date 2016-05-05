@@ -31,9 +31,9 @@ public class ApplicationConfig extends javax.ws.rs.core.Application {
         resources.add(httpErrors.GenericExceptionMapper.class);
         resources.add(httpErrors.NotFoundExceptionMapper.class);
         resources.add(rest.BookingService.class);
-        resources.add(rest.CreateUser.class);
         resources.add(rest.Flight.class);
         resources.add(rest.Test.class);
+        resources.add(rest.UserEndpoint.class);
         resources.add(security.JWTAuthenticationFilter.class);
         resources.add(security.Login.class);
         resources.add(security.NotAuthorizedExceptionMapper.class);

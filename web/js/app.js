@@ -17,6 +17,18 @@ bonierApp.config(function($routeProvider, $httpProvider) {
         templateUrl: 'partials/registration.html',
         controller: 'formController'
     }).
+    when('/profile', {
+        templateUrl: 'partials/profile.html',
+        controller: 'profileCtrl'
+    }).
+    when('/admin', {
+        templateUrl: 'partials/admin.html',
+        controller: 'adminCtrl'
+    }).
+    when('/admin/:username', {
+        templateUrl: 'partials/admin-details.html',
+        controller: 'adminDetailsCtrl'
+    }).
     otherwise({
         redirectTo: '/start'
     });
