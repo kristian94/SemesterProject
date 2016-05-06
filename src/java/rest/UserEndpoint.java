@@ -64,6 +64,7 @@ public class UserEndpoint {
         return "ok"; //return json instead?
     }
        
+    @RolesAllowed("Admin")
     @GET
     @Path("/all")
     @Produces("application/json")
@@ -81,7 +82,7 @@ public class UserEndpoint {
         return gson.toJson(ja);
     }
     
-//    @RolesAllowed("User") doesn't work - null pointer exception?
+    @RolesAllowed({"Admin", "User"})
     @GET
     @Path("/{username}")
     @Produces("application/json")

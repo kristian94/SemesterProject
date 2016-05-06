@@ -1,53 +1,41 @@
-var app = angular.module('bonierControllers', [])
-var baseUrl = "http://localhost:8080/SemesterProject/api/flight"
-app.controller('resultListCtrl', function($scope, $http, searchResultFactory) {
+var app = angular.module('bonierControllers', []);
+
+app.controller('resultListCtrl', function($scope, searchResultFactory) {
     $scope.result = searchResultFactory.getSearchResult();
-    $scope.parameters = searchResultFactory.getSearchParameters();
+    $scope.search = searchResultFactory.getSearchParameters();
+    console.log($scope.result);
+    console.log($scope.search);
 
-
-    // todo make this a service
     $scope.searchUpdate = function() {
-        var isoDate = new Date($scope.date);
-        // var isoDate = new Date($scope.date).toISOString();
+        if ($scope.search.origin == undefined || $scope.search.date == undefined || $scope.search.numberOfSeats == undefined) {
+            console.log("a parameter undefined");
+            return;
+        }
+        var date = new Date($scope.search.date)
+        var dateUTC = date.getTime() - (date.getTimezoneOffset() * 60000);
+        var isoDate = new Date(dateUTC).toISOString();
+
         var searchParameters = {
             "origin": $scope.search.origin,
             "destination": $scope.search.destination,
             "date": isoDate,
             "numberOfSeats": $scope.search.numberOfSeats
         };
-        //todo check input before post request
 
-        $http.post(baseUrl, searchParameters)
-            .success(function(data, status) {
-                $scope.result = data;
-                console.log($scope.result);
-            })
-            .error(function(data, status) {
-                console.log("unhandled error");
-                console.log($scope.result);
-            });
+        //start loading animation here
+        searchResultFactory.search(searchParameters).then(function(result) {
+            $scope.result = result;
+            console.log("new scope result " + $scope.result);
+            //stop loading animation here
+        });
     };
 });
 
-app.controller('searchCtrl', function($scope, $http, $location, searchResultFactory) {
-
-
-
-    $(document).ready(function() {
-        $('#datepicker').datepicker({
-            minDate: 0,
-            dayNamesMin: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-        });
-    });
-
-
-
+app.controller('searchCtrl', function($scope, searchResultFactory) {
     $scope.search = function() {
-        var year = $('#datepicker').datepicker("getDate").getFullYear();
-        var month = $('#datepicker').datepicker("getDate").getMonth();
-        var day = $('#datepicker').datepicker("getDate").getDate();
-        var isoDate = JSON.stringify(new Date(year,month,day,2));
-        console.log(isoDate);
+        var date = new Date($scope.date)
+        var dateUTC = date.getTime() - (date.getTimezoneOffset() * 60000);
+        var isoDate = new Date(dateUTC).toISOString();
 
         var searchParameters = {
             "origin": $scope.from,
@@ -56,19 +44,9 @@ app.controller('searchCtrl', function($scope, $http, $location, searchResultFact
             "numberOfSeats": $scope.seats
         };
         //todo check input before post request
-
-        // todo make this a service
-        $http.post(baseUrl, searchParameters)
-            .success(function(data, status) {
-                searchResultFactory.saveSearchResult(data);
-                searchParameters.date = $scope.date
-                console.log(searchParameters.date);
-                searchResultFactory.saveSearchParameters(searchParameters)
-                $location.url('/flights');
-            })
-            .error(function(data, status) {
-                console.log("unhandled error");
-            });
+        searchResultFactory.search(searchParameters);
+        searchParameters.date = $scope.date
+        searchResultFactory.saveSearchParameters(searchParameters)
     };
 });
 
@@ -108,14 +86,27 @@ app.controller('formController', ['$scope', '$http', function($scope, $http, $wi
     };
 }]);
 
-app.factory('searchResultFactory', function() {
+app.factory('searchResultFactory', function($http, $location, $q) {
     var searchResult = [];
     var searchParameters = [];
+    var baseUrl = "api/flight";
 
     return {
-        saveSearchResult: function(data) {
-            searchResult = data;
-            console.log("saving result " + data);
+        search: function(searchParameters) {
+            console.log("in search factory");
+            var deferred = $q.defer();
+            $http.post(baseUrl, searchParameters)
+                .success(function(data, status) {
+                    console.log(data);
+                    searchResult = data;
+                    $location.url('/flights');
+                    deferred.resolve(data);
+                })
+                .error(function(data, status) {
+                    console.log("unhandled error");
+                    deferred.reject(data);
+                });
+            return deferred.promise;
         },
         getSearchResult: function() {
             console.log("getting search result");
@@ -153,7 +144,6 @@ app.controller('profileCtrl', function($http, $window, jwtHelper, $scope) {
             console.log("handle this error");
         });
 
-    /* get bookings
     $http.get('api/booking')
         .success(function(data) {
             console.log(data);
@@ -161,7 +151,6 @@ app.controller('profileCtrl', function($http, $window, jwtHelper, $scope) {
         .error(function(data) {
             console.log(data);
         });
-    */
 });
 
 app.controller('adminCtrl', function($http, $window, jwtHelper, $scope) {

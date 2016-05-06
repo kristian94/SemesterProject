@@ -8,19 +8,19 @@
                 </div>
                 <div class="form-group">
                     <label>Departure airport</label>
-                    <input class="form-control" type="text" ng-change="searchUpdate()" ng-model-options="{debounce: 500}" ng-model="search.origin" ng-value="parameters.origin">
+                    <input class="form-control" type="text" ng-change="searchUpdate()" ng-model-options="{debounce: 500}" ng-model="search.origin">
                 </div>
                 <div class="form-group">
                     <label>Arrival airport</label>
-                    <input class="form-control" type="text" ng-change="searchUpdate()" ng-model-options="{debounce: 500}" ng-model="search.destination"  ng-value="parameters.destination">
+                    <input class="form-control" type="text" ng-change="searchUpdate()" ng-model-options="{debounce: 500}" ng-model="search.destination">
                 </div>
                 <div class="form-group">
                     <label>Date *filter not working*</label>
-                    <input class="form-control" type="date" ng-change="searchUpdate()" ng-model-options="{debounce: 500}" ng-model="date">
+                    <input class="form-control" type="date" ng-change="searchUpdate()" ng-model-options="{debounce: 500}" ng-model="search.date">
                 </div>
                 <div class="form-group">
                     <label>Number of seats</label>
-                    <input class="form-control" type="number" ng-change="searchUpdate()" ng-model-options="{debounce: 500}" ng-model="search.numberOfSeats" ng-value="parameters.numberOfSeats">
+                    <input class="form-control" min="1" type="number" ng-change="searchUpdate()" ng-model-options="{debounce: 500}" ng-model="search.numberOfSeats">
                 </div>
                 <div class="form-group">
                     <label>Time of day</label>
@@ -47,8 +47,8 @@
         </div>
         <div class="col-md-9">
             <ul class="list-group">
-                <div ng-repeat="airline in result | filter:searchA">
-                    <li class="list-group-item" ng-repeat="flight in airline.flights | filter:search">
+                <!--<div ng-repeat="airline in result">-->
+                    <li class="list-group-item" ng-repeat="flight in result.flights">
                         <ul>
                             <li>AirlineName:
                                 {{airline.airline}}</li>
@@ -70,7 +70,7 @@
                                 {{flight.flightNumber}}</li>
                         </ul>
                     </li>
-                </div>
+                <!--</div>-->
             </ul>
         </div>
     </div>

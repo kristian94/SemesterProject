@@ -113,7 +113,7 @@ public class RequestForwarder {
         if (jsonOb.get("destination") != null) {
             urlEnd.append("/" + jsonOb.get("destination").getAsString());
         }
-        urlEnd.append(("/" + jsonOb.get("date").getAsString()));
+        urlEnd.append(("/" + jsonOb.get("date").getAsString().replace("\"", ""))); // .replace() - the date is sent with quotes for some reason
         urlEnd.append(("/" + jsonOb.get("numberOfSeats").getAsString()));
         return urlEnd.toString();
     }

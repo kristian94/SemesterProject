@@ -34,14 +34,15 @@ public class ServerDeployment implements ServletContextListener {
     
     private AirlineFacade af = new AirlineFacade();
     
-    private static String[] AIRLINE_NAMES = {"Angular something", "Bonier"};
-    private static String[] AIRLINE_URLS = {"http://angularairline-plaul.rhcloud.com/api", "http://46.101.175.10/api"};
+    private static String[] AIRLINE_NAMES = {"Bonier"};
+    private static String[] AIRLINE_URLS = {"http://46.101.175.10/api"};
 
     private EntityManagerFactory emf = Persistence.createEntityManagerFactory(PU_NAME);
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         System.out.println("Context Init");
+        updateAirlineDB();
         Map<String, String> env = System.getenv();
         if (env.keySet().contains("OPENSHIFT_MYSQL_DB_HOST")) {
             PU_NAME = "PU_OPENSHIFT";
@@ -83,7 +84,6 @@ public class ServerDeployment implements ServletContextListener {
         } catch (PasswordStorage.CannotPerformOperationException ex) {
             Logger.getLogger(ServerDeployment.class.getName()).log(Level.SEVERE, null, ex);
         }
-        updateAirlineDB();
     }
 
     @Override
