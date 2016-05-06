@@ -90,7 +90,14 @@ public class UserFacade implements IUserFacade {
 
     @Override
     public IUser getUserByUserId(String id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        EntityManager em = emf.createEntityManager();
+        IUser u = null;
+        try{
+            u = em.find(User.class, id);
+        }finally{
+            em.close();
+        }
+        return u;
     }
 
 }
