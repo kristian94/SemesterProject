@@ -64,10 +64,12 @@ public class JsonHelper {
     public Booking jsonToBooking(String content) {
         Booking b = new Booking();
         JsonObject json = (JsonObject) parser.parse(content);
+        b.setTravelDate(json.get("date").getAsString());
         b.setOrigin(json.get("origin").getAsString());
         b.setDestination(json.get("destination").getAsString());
         b.setFlightTimeInMinutes(json.get("flightTime").getAsInt());
         b.setReserveeName(json.get("reserveeName").getAsString());
+        b.setFlightNumber(json.get("flightNumber").getAsString());
         JsonArray passengers = json.get("passengers").getAsJsonArray();
         for (JsonElement e : passengers) {
             Passenger p = new Passenger();
@@ -83,6 +85,13 @@ public class JsonHelper {
     public String getUserNameFromJson(String content) {
         JsonObject jsonObject = (JsonObject) parser.parse(content);
         return jsonObject.get("userName").getAsString();
+    }
+    
+    public String addReserveeName(String content, User u) {
+        JsonObject json = (JsonObject) parser.parse(content);
+        String fullName = u.getFirstName() + " " + u.getLastName();
+        json.addProperty("reserveeName", fullName);
+        return json.toString();
     }
 
 }

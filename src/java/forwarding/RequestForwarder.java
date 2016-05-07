@@ -70,7 +70,9 @@ public class RequestForwarder {
                     JsonObject json = parser.parse(fut.get()).getAsJsonObject();
                     System.out.println("json looks like this: " + gson.toJson(json));
                     airlineNames.add(json.get("airline").getAsString());
-                    array.add(fut.get());
+                    
+                    if(!json.get("flights").toString().equals("[]")) array.add(json.toString());
+                    
                 }
 
             } catch (InterruptedException ex) {
@@ -81,7 +83,7 @@ public class RequestForwarder {
         }
 
         updateAirlines(airlineUrls, airlineNames);
-        System.out.println(array);
+        System.out.println("Array looks like this:" +array);
         return array;
     }
 
@@ -91,9 +93,11 @@ public class RequestForwarder {
             JsonObject json = (JsonObject) parser.parse(content);
             Airline a = af.getAirlineByName(json.get("airline").getAsString());
 
+            
+            
             fullUrl.append(a.getUrl());
-            fullUrl.append("/flightreservation");
-//            fullUrl.append(("/" + json.get("flightID").getAsString()));
+            fullUrl.append("/reservation");
+            fullUrl.append(("/" + json.get("flightID").getAsString()));
 
             Future<String> res = ex.submit(new ForwarderCallable(fullUrl.toString(), content, "POST"));
             return parser.parse(res.get()).getAsJsonObject();

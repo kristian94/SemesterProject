@@ -53,8 +53,10 @@ public class BookingService {
     @Produces("application/json")
     public String postBooking(String content){
         User u = uf.getUserByUserName(jh.getUserNameFromJson(content));
-        String result = rf.bookingRequest(content).getAsString();
-        u.addBooking(jh.jsonToBooking(result));
+        content = jh.addReserveeName(content, u);
+        String result = rf.bookingRequest(content).toString();
+        Booking b = jh.jsonToBooking(result);
+        uf.addBooking(u, b);
         return result;
     }
     

@@ -53,10 +53,12 @@ public class Flight {
     @POST
     @Consumes("application/json")
     @Produces("application/json")
-    public String getFlights(String content) {
+    public String getFlight(String content) {
 //        sf.addSearch(jh.toSearch(content));
-        
-        return rf.flightRequest(content).getAsString();
+        String res = rf.flightRequest(content).toString();
+        System.out.println("attempting to print res:");
+        System.out.println(res);
+        return res;
     }
 
     
