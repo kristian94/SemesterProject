@@ -18,6 +18,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -92,6 +93,37 @@ public class JsonHelper {
         String fullName = u.getFirstName() + " " + u.getLastName();
         json.addProperty("reserveeName", fullName);
         return json.toString();
+    }
+
+    public String bookingListToJson(List<Booking> bookings) {
+        JsonArray bookingArray = new JsonArray();
+        for(Booking b: bookings){
+            bookingArray.add(bookingToJsonObject(b));
+            
+        }
+        return bookingArray.toString();
+    }
+    
+    private JsonObject bookingToJsonObject(Booking b) {
+        JsonArray passengerArray = new JsonArray();
+        for(Passenger p: b.getPassengers()){
+            JsonObject passengerJson = new JsonObject();
+            passengerJson.addProperty("firstName", p.getFirstName());
+            passengerJson.addProperty("lastName", p.getLastName());
+            passengerArray.add(passengerJson);
+        }
+        
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("date", b.getTravelDate());
+        jsonObject.addProperty("destination", b.getDestination());
+        jsonObject.addProperty("flightNumber", b.getFlightNumber());
+        jsonObject.addProperty("flightTime", b.getFlightTimeInMinutes());
+        jsonObject.addProperty("origin", b.getOrigin());
+        jsonObject.addProperty("reserveeName", b.getReserveeName());
+        jsonObject.addProperty("userName", b.getUser().getUserName());
+        jsonObject.add("passengers", passengerArray);
+        
+        return jsonObject;
     }
 
 }

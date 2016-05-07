@@ -64,7 +64,7 @@ public class BookingService {
     @GET
     @Produces("application/json")
     public String getBookings(){
-        return gson.toJson(bf.getBookings());
+        return jh.bookingListToJson(bf.getBookings());
     }
     
 }
