@@ -5,23 +5,23 @@
  */
 package junit;
 
-import entity.Booking;
-import entity.Passenger;
-import entity.SearchEntity;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import deployment.ServerDeployment;
+import entity.User;
+import facade.AirlineFacade;
 import facade.BookingFacade;
 import facade.SearchFacade;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
+import facade.UserFacade;
+import forwarding.RequestForwarder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import org.junit.*;
+import security.PasswordStorage;
+import utility.JsonHelper;
 
 /**
  *
@@ -29,6 +29,13 @@ import static org.junit.Assert.*;
  */
 public class JUnitTest {
 
+    RequestForwarder rf = new RequestForwarder();
+    AirlineFacade af = new AirlineFacade();
+    BookingFacade bf = new BookingFacade();
+    SearchFacade sf = new SearchFacade();
+    UserFacade uf = new UserFacade();
+    JsonHelper jh = new JsonHelper();
+    
     public JUnitTest() {
     }
 
@@ -36,6 +43,65 @@ public class JUnitTest {
     public static void setUpClass() {
 
     }
+    
+    @Test
+    public void testFlightForwardingWithoutDestination(){
+        JsonObject rj = new JsonObject();
+        rj.addProperty("origin", "CPH");
+        rj.addProperty("date", "2016-05-23T00:00:00.000Z");
+        rj.addProperty("numberOfSeats", 2);
+        
+        JsonArray flights = rf.flightRequest(rj.toString());
+        
+        Assert.assertTrue(flights.size() > 0);
+        
+    }
+    
+    @Test
+    public void testFlightForwardingWithDestination(){
+        JsonObject rj = new JsonObject();
+        rj.addProperty("origin", "CPH");
+        rj.addProperty("destination", "STN");
+        rj.addProperty("date", "2016-05-23T00:00:00.000Z");
+        rj.addProperty("numberOfSeats", 2);
+        
+        JsonArray flights = rf.flightRequest(rj.toString());
+        
+        Assert.assertTrue(flights.size() > 0);
+        
+    }
+    
+    @Test
+    public void testUserFacade() {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(ServerDeployment.PU_NAME);
+        EntityManager em = emf.createEntityManager();
+        
+        String userName = "testUser";
+        
+        User uu = uf.getUserByUserName(userName);
+        if(uu != null){
+            uf.deleteUser(userName);
+        }
+        
+        User u = new User();
+        u.setFirstName("Michael");
+        u.setLastName("Brookes");
+        u.setEmail("mb@mail.com");
+        try {
+            u.setPassword(PasswordStorage.createHash("password"));
+        } catch (PasswordStorage.CannotPerformOperationException ex) {
+            Logger.getLogger(JUnitTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        u.setUserName(userName);
+        
+        em.getTransaction().begin();
+        em.persist(u);
+        em.getTransaction().commit();
+        
+        Assert.assertNotNull(uf.getUserByUserName(userName));
+        
+    }
+    
 
     @AfterClass
     public static void tearDownClass() {
