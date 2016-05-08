@@ -31,9 +31,9 @@ import security.PasswordStorage;
 public class ServerDeployment implements ServletContextListener {
 
     public static String PU_NAME = "PU-Local";
-    
+
     private AirlineFacade af = new AirlineFacade();
-    
+
     private static String[] AIRLINE_NAMES = {"Bonier"};
     private static String[] AIRLINE_URLS = {"http://46.101.175.10/api"};
 
@@ -59,9 +59,12 @@ public class ServerDeployment implements ServletContextListener {
             }
             Role userRole = new Role("User");
             Role adminRole = new Role("Admin");
-            
 
             User user = new User("user", PasswordStorage.createHash("test"));
+            user.setEmail("mail@mail.com");
+            user.setFirstName("Bob");
+            user.setLastName("Johnson");
+
             User admin = new User("admin", PasswordStorage.createHash("test"));
             User both = new User("user_admin", PasswordStorage.createHash("test"));
             user.AddRole(userRole);
@@ -92,13 +95,12 @@ public class ServerDeployment implements ServletContextListener {
 
     private void updateAirlineDB() {
         System.out.println("Updating Airlines...");
-        
-            List<Airline> airlines = makeAirlines(AIRLINE_NAMES, AIRLINE_URLS);
-            for (Airline a : airlines) {
-                af.addAirlineNoOverwrite(a);
-                
-            }
-            
+
+        List<Airline> airlines = makeAirlines(AIRLINE_NAMES, AIRLINE_URLS);
+        for (Airline a : airlines) {
+            af.addAirlineNoOverwrite(a);
+
+        }
 
     }
 
@@ -113,7 +115,7 @@ public class ServerDeployment implements ServletContextListener {
             res.add(a);
             ++i;
         }
-        System.out.println("Index: "+i);
+        System.out.println("Index: " + i);
         return res;
     }
 

@@ -109,6 +109,7 @@ public class User implements Serializable, IUser {
     }
 
     public void addBooking(Booking booking) {
+        booking.setUser(this);
         bookings.add(booking);
     }
     

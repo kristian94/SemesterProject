@@ -45,9 +45,8 @@ public class Booking implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "BOOKING_ID")
     private Long bookingID;
-    private int flightNumber;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date travelDate;
+    private String flightNumber;
+    private String travelDate;
     private String origin;
     private String destination;
     private String reserveeName;
@@ -86,21 +85,9 @@ public class Booking implements Serializable {
         return "entity.Booking[ id=" + bookingID + " ]";
     }
 
-    public int getFlightNumber() {
-        return flightNumber;
-    }
+    
 
-    public void setFlightNumber(int flightNumber) {
-        this.flightNumber = flightNumber;
-    }
 
-    public Date getTravelDate() {
-        return travelDate;
-    }
-
-    public void setTravelDate(Date travelDate) {
-        this.travelDate = travelDate;
-    }
 
     public String getOrigin() {
         return origin;
@@ -160,6 +147,22 @@ public class Booking implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getFlightNumber() {
+        return flightNumber;
+    }
+
+    public void setFlightNumber(String flightNumber) {
+        this.flightNumber = flightNumber;
+    }
+
+    public String getTravelDate() {
+        return travelDate;
+    }
+
+    public void setTravelDate(String travelDate) {
+        this.travelDate = travelDate;
     }
 
 }

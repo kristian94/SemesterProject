@@ -67,10 +67,12 @@ public class JsonHelper {
     public Booking jsonToBooking(String content) {
         Booking b = new Booking();
         JsonObject json = (JsonObject) parser.parse(content);
+        b.setTravelDate(json.get("date").getAsString());
         b.setOrigin(json.get("origin").getAsString());
         b.setDestination(json.get("destination").getAsString());
         b.setFlightTimeInMinutes(json.get("flightTime").getAsInt());
         b.setReserveeName(json.get("reserveeName").getAsString());
+        b.setFlightNumber(json.get("flightNumber").getAsString());
         JsonArray passengers = json.get("passengers").getAsJsonArray();
         for (JsonElement e : passengers) {
             Passenger p = new Passenger();
@@ -94,6 +96,44 @@ public class JsonHelper {
     public String getUserNameFromJson(String content) {
         JsonObject jsonObject = (JsonObject) parser.parse(content);
         return jsonObject.get("userName").getAsString();
+    }
+    
+    public String addReserveeName(String content, User u) {
+        JsonObject json = (JsonObject) parser.parse(content);
+        String fullName = u.getFirstName() + " " + u.getLastName();
+        json.addProperty("reserveeName", fullName);
+        return json.toString();
+    }
+
+    public String bookingListToJson(List<Booking> bookings) {
+        JsonArray bookingArray = new JsonArray();
+        for(Booking b: bookings){
+            bookingArray.add(bookingToJsonObject(b));
+            
+        }
+        return bookingArray.toString();
+    }
+    
+    private JsonObject bookingToJsonObject(Booking b) {
+        JsonArray passengerArray = new JsonArray();
+        for(Passenger p: b.getPassengers()){
+            JsonObject passengerJson = new JsonObject();
+            passengerJson.addProperty("firstName", p.getFirstName());
+            passengerJson.addProperty("lastName", p.getLastName());
+            passengerArray.add(passengerJson);
+        }
+        
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("date", b.getTravelDate());
+        jsonObject.addProperty("destination", b.getDestination());
+        jsonObject.addProperty("flightNumber", b.getFlightNumber());
+        jsonObject.addProperty("flightTime", b.getFlightTimeInMinutes());
+        jsonObject.addProperty("origin", b.getOrigin());
+        jsonObject.addProperty("reserveeName", b.getReserveeName());
+        jsonObject.addProperty("userName", b.getUser().getUserName());
+        jsonObject.add("passengers", passengerArray);
+        
+        return jsonObject;
     }
 
 }

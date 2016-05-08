@@ -78,9 +78,10 @@ public class ForwarderCallable implements Callable<String> {
                     .headers(headers)
                     .body(body).asJson();
             int code = response.getStatus();
-
+            
             if (code < 400 && code >= 200) {
-
+                System.out.println(url + "- responded with: "+code);
+                System.out.println("response body: "+response.getBody().toString());
                 return response.getBody().toString();
             } else {
                 printResponse(response);

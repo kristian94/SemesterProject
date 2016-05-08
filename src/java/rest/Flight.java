@@ -61,7 +61,6 @@ public class Flight {
                     .header("Access-Control-Allow-Methods", "GET")
                     .entity(rf.flightRequest(content).getAsString())
                     .build();
-
     }
     
     

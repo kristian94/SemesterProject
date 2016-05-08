@@ -17,7 +17,7 @@ public class ApplicationConfig extends javax.ws.rs.core.Application {
     @Override
     public Set<Class<?>> getClasses() {
         Set<Class<?>> resources = new java.util.HashSet<>();
-        addRestResourceClasses(resources);
+//        addRestResourceClasses(resources);
         return resources;
     }
 

@@ -1,6 +1,7 @@
 package facade;
 
 import deployment.ServerDeployment;
+import entity.Booking;
 import entity.User;
 import java.util.List;
 import java.util.logging.Level;
@@ -98,6 +99,25 @@ public class UserFacade implements IUserFacade {
             em.close();
         }
         return u;
+    }
+    
+    public void addBooking(User u, Booking b) {
+        EntityManager em = emf.createEntityManager();
+        try{
+            u.addBooking(b);
+            em.getTransaction().begin();
+            em.merge(u);
+            em.getTransaction().commit();
+        }catch(Exception e){
+            System.out.println("Error adding");
+            System.out.println("Booking: " + b.getFlightNumber() + ", " + b.getOrigin() + " to " + b.getDestination());
+            System.out.println("To User: " + u.getUserName());
+            e.printStackTrace();
+        }
+        finally{
+            em.close();
+        }
+        
     }
 
 }
