@@ -25,7 +25,6 @@ public class ResponseBuilder {
         return Response.status(s).entity(body).build();
     }
     
-    
     private static Status codeToStatus(int code) {
         Status s = Response.Status.OK;
         

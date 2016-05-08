@@ -5,11 +5,13 @@
  */
 package utility;
 
+import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import entity.Airport;
 import entity.Booking;
 import entity.Passenger;
 import entity.SearchEntity;
@@ -81,6 +83,14 @@ public class JsonHelper {
         System.out.println("Printing Booking as JsonString:");
         System.out.println(gson.toJson(b));
         return b;
+    }
+    
+    public String airportToJson(Airport a) {
+        return gson.toJson(a, Airport.class);
+    }
+    
+    public String airportsToJson(List<Airport> as) {
+        return gson.toJson(as, new TypeToken<List<Airport>>() {}.getType());
     }
 
     public String getUserNameFromJson(String content) {
