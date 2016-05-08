@@ -20,6 +20,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
+import javax.ws.rs.core.Response;
 import utility.JsonHelper;
 
 /**
@@ -53,13 +54,15 @@ public class Flight {
     @POST
     @Consumes("application/json")
     @Produces("application/json")
-    public String getFlights(String content) {
-//        sf.addSearch(jh.toSearch(content));
-        
-        return rf.flightRequest(content).getAsString();
-    }
+    public Response getFlights(String content) {
+        return Response
+                    .status(Response.Status.OK)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Methods", "GET")
+                    .entity(rf.flightRequest(content).getAsString())
+                    .build();
 
-    
+    }
     
     
 }
