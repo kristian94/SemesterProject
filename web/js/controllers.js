@@ -1,16 +1,23 @@
 var app = angular.module('bonierControllers', []);
 
-app.controller('resultListCtrl', function($scope, searchResultFactory) {
+app.controller('resultListCtrl', function($scope, $window, jwtHelper, searchResultFactory) {
+    var init = function() {
+        var token = $window.sessionStorage.id_token;
+        if (token) {
+            initializeFromToken($scope, $window.sessionStorage.id_token, jwtHelper); // function in auth.js
+        }
+    };
+    init();
     $scope.result = searchResultFactory.getSearchResult();
     $scope.search = searchResultFactory.getSearchParameters();
-    console.log($scope.result);
-    console.log($scope.search);
 
     $scope.searchUpdate = function() {
         if ($scope.search.origin == undefined || $scope.search.date == undefined || $scope.search.numberOfSeats == undefined) {
             console.log("a parameter undefined");
+            //todo visually show which parameter is undefined
             return;
         }
+
         var date = new Date($scope.search.date)
         var dateUTC = date.getTime() - (date.getTimezoneOffset() * 60000);
         var isoDate = new Date(dateUTC).toISOString();
@@ -29,6 +36,12 @@ app.controller('resultListCtrl', function($scope, searchResultFactory) {
             //stop loading animation here
         });
     };
+
+    $scope.bookTickets = function() {
+            console.log("booking tickets");
+            //todo confirm modal?
+            //send post
+    };
 });
 
 app.controller('searchCtrl', function($scope, searchResultFactory) {
@@ -44,9 +57,10 @@ app.controller('searchCtrl', function($scope, searchResultFactory) {
             "numberOfSeats": $scope.seats
         };
         //todo check input before post request
-        searchResultFactory.search(searchParameters);
-        searchParameters.date = $scope.date
-        searchResultFactory.saveSearchParameters(searchParameters)
+        searchResultFactory.search(searchParameters).then(function(result) {
+            searchParameters.date = $scope.date;
+            searchResultFactory.saveSearchParameters(searchParameters);
+        });
     };
 });
 
@@ -86,54 +100,18 @@ app.controller('formController', ['$scope', '$http', function($scope, $http, $wi
     };
 }]);
 
-app.factory('searchResultFactory', function($http, $location, $q) {
-    var searchResult = [];
-    var searchParameters = [];
-    var baseUrl = "api/flight";
-
-    return {
-        search: function(searchParameters) {
-            console.log("in search factory");
-            var deferred = $q.defer();
-            $http.post(baseUrl, searchParameters)
-                .success(function(data, status) {
-                    console.log(data);
-                    searchResult = data;
-                    $location.url('/flights');
-                    deferred.resolve(data);
-                })
-                .error(function(data, status) {
-                    console.log("unhandled error");
-                    deferred.reject(data);
-                });
-            return deferred.promise;
-        },
-        getSearchResult: function() {
-            console.log("getting search result");
-            return searchResult;
-        },
-        saveSearchParameters: function(data) {
-            searchParameters = data;
-            console.log("saving parameters " + data);
-        },
-        getSearchParameters: function(data) {
-            console.log("getting search parameters");
-            return searchParameters;
-        }
-    };
-});
-
 app.controller('profileCtrl', function($http, $window, jwtHelper, $scope) {
     var init = function() {
         var token = $window.sessionStorage.id_token;
         if (token) {
-            // function in auth.js
-            initializeFromToken($scope, $window.sessionStorage.id_token, jwtHelper);
+            initializeFromToken($scope, $window.sessionStorage.id_token, jwtHelper); // function in auth.js
         }
     };
     init();
 
     $scope.user = {};
+    $scope.bookings = [];
+
     $http.get('api/user/' + $scope.username)
         .success(function(data) {
             console.log(data);
@@ -143,22 +121,24 @@ app.controller('profileCtrl', function($http, $window, jwtHelper, $scope) {
             console.log(data);
             console.log("handle this error");
         });
+        /*
+        Get bookings for user
 
-    $http.get('api/booking')
+        $http.get('api/booking')
         .success(function(data) {
             console.log(data);
         })
         .error(function(data) {
             console.log(data);
         });
+        */
 });
 
 app.controller('adminCtrl', function($http, $window, jwtHelper, $scope) {
     var init = function() {
         var token = $window.sessionStorage.id_token;
         if (token) {
-            // function in auth.js
-            initializeFromToken($scope, $window.sessionStorage.id_token, jwtHelper);
+            initializeFromToken($scope, $window.sessionStorage.id_token, jwtHelper); // function in auth.js
         }
     };
     init();

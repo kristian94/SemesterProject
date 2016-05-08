@@ -68,13 +68,24 @@ public class RequestForwarder {
         for (Future<String> fut : results) {
             try {
                 if (!fut.get().equals("")) {
-                    System.out.println("fut.get yields: " + fut.get());
+//                    System.out.println("fut.get yields: " + fut.get());
                     JsonObject json = parser.parse(fut.get()).getAsJsonObject();
-                    System.out.println("json looks like this: " + gson.toJson(json));
-                    airlineNames.add(json.get("airline").getAsString());
-                    
-                    if(!json.get("flights").toString().equals("[]")) array.add(json.toString());
-                    
+//                    System.out.println("json looks like this: " + gson.toJson(json));
+                    String airline = json.get("airline").getAsString();
+                    airlineNames.add(airline);
+                    try {
+                        JsonArray flightArray = json.get("flights").getAsJsonArray();
+                        for (JsonElement e : flightArray) {
+                            JsonObject jo = e.getAsJsonObject();
+                            jo.addProperty("airline", airline);
+                            array.add(jo);
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Array empty");
+                        
+                    }
+
+
                 }
 
             } catch (InterruptedException ex) {
@@ -85,7 +96,7 @@ public class RequestForwarder {
         }
 
         updateAirlines(airlineUrls, airlineNames);
-        System.out.println("Array looks like this:" +array);
+        System.out.println("Array looks like this:" + array);
         return array;
     }
 
@@ -95,8 +106,6 @@ public class RequestForwarder {
             JsonObject json = (JsonObject) parser.parse(content);
             Airline a = af.getAirlineByName(json.get("airline").getAsString());
 
-            
-            
             fullUrl.append(a.getUrl());
             fullUrl.append("/reservation");
             fullUrl.append(("/" + json.get("flightID").getAsString()));
