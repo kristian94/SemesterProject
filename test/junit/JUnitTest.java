@@ -32,38 +32,6 @@ public class JUnitTest {
     public JUnitTest() {
     }
 
-    @Test
-    public void searchFacadeTest() {
-        SearchFacade sf = new SearchFacade();
-        SearchEntity s = new SearchEntity();
-
-        Date now = Calendar.getInstance().getTime();
-        Date travelDate = Calendar.getInstance().getTime();
-        travelDate.setTime(now.getTime() + (1000 * 60 * 60 * 24 * 7));
-        
-        Date findDate = Calendar.getInstance().getTime();
-        findDate.setTime(now.getTime() + (1000 * 60));
-        
-        s.setSearchDate(now);
-
-        s.setTravelDate(travelDate);
-
-        s.setDestination("CPH");
-        s.setOrigin("STN");
-        s.setNumberOfSeats(1);
-
-        sf.addSearch(s);
-        
-        System.out.println(sf.getSearches().get(0).getTravelDate());
-        
-        assertNotNull(sf.getSearches());
-        assertNotNull(sf.getSearchesByDate(findDate));
-        assertNotNull(sf.getSearchesByDesination("CPH"));
-        assertNotNull(sf.getSearchesByOrigin("STN"));
-
-    }
-    
-
     @BeforeClass
     public static void setUpClass() {
 

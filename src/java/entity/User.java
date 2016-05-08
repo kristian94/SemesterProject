@@ -23,7 +23,7 @@ import security.IUser;
 public class User implements Serializable, IUser {
 
     private static final long serialVersionUID = 1L;
-
+    
     @Id
     private String userName;
     private String password;
@@ -120,5 +120,7 @@ public class User implements Serializable, IUser {
     public void setBookings(List<Booking> bookings) {
         this.bookings = bookings;
     }
+    
+    
 
 }

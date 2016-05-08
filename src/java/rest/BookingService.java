@@ -6,11 +6,13 @@
 package rest;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import entity.Booking;
 import entity.User;
 import facade.BookingFacade;
 import facade.UserFacade;
 import forwarding.RequestForwarder;
+import java.util.List;
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -63,8 +65,31 @@ public class BookingService {
     @RolesAllowed("Admin")
     @GET
     @Produces("application/json")
-    public String getBookings(){
-        return jh.bookingListToJson(bf.getBookings());
+    public Response getBookings(){
+        
+        List<Booking> bookings = bf.getBookings();
+        JsonArray array = jh.bookingListToJson(bookings);
+        if(array.size() == 0){
+            return Response.status(Status.NOT_FOUND).entity(jh.getNoBookings().toString()).build();
+        }
+        
+        return Response.status(Status.OK).entity(array.toString()).build();
     }
+    
+    @GET
+    @Produces("application/json")
+    @Path("/{userName}")
+    public Response getBookingByuser(@PathParam("userName") String userName){
+        User u = uf.getUserByUserName(userName);
+        List<Booking> bookings = u.getBookings();
+        JsonArray array = jh.bookingListToJson(bookings);
+        if(array.size() == 0){
+            return Response.status(Status.NOT_FOUND).entity(jh.getNoBookings().toString()).build();
+        }
+        
+        return Response.status(Status.OK).entity(array.toString()).build();
+    }
+    
+    
     
 }

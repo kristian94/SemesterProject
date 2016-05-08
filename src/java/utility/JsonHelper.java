@@ -39,7 +39,6 @@ public class JsonHelper {
         SearchEntity s = new SearchEntity();
         DateFormat sdfISO = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
-        DateFormat df = DateFormat.getInstance();
         Calendar c = Calendar.getInstance();
 
         s.setOrigin(json.get("origin").getAsString());
@@ -49,17 +48,11 @@ public class JsonHelper {
                 s.setDestination(dest);
             }
         } catch (NullPointerException ne) {
-            System.out.println(ne);
         }
         s.setNumberOfSeats(json.get("numberOfSeats").getAsInt());
+        s.setTravelDate((json.get("date").getAsString()));
 
-        try {
-            s.setTravelDate(sdfISO.parse(json.get("date").getAsString()));
-        } catch (ParseException ex) {
-            Logger.getLogger(JsonHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        s.setSearchDate(c.getTime());
+        s.setSearchDate(c.getTime().toString());
 
         return s;
     }
@@ -84,20 +77,21 @@ public class JsonHelper {
         System.out.println(gson.toJson(b));
         return b;
     }
-    
+
     public String airportToJson(Airport a) {
         return gson.toJson(a, Airport.class);
     }
-    
+
     public String airportsToJson(List<Airport> as) {
-        return gson.toJson(as, new TypeToken<List<Airport>>() {}.getType());
+        return gson.toJson(as, new TypeToken<List<Airport>>() {
+        }.getType());
     }
 
     public String getUserNameFromJson(String content) {
         JsonObject jsonObject = (JsonObject) parser.parse(content);
         return jsonObject.get("userName").getAsString();
     }
-    
+
     public String addReserveeName(String content, User u) {
         JsonObject json = (JsonObject) parser.parse(content);
         String fullName = u.getFirstName() + " " + u.getLastName();
@@ -105,24 +99,24 @@ public class JsonHelper {
         return json.toString();
     }
 
-    public String bookingListToJson(List<Booking> bookings) {
+    public JsonArray bookingListToJson(List<Booking> bookings) {
         JsonArray bookingArray = new JsonArray();
-        for(Booking b: bookings){
+        for (Booking b : bookings) {
             bookingArray.add(bookingToJsonObject(b));
-            
+
         }
-        return bookingArray.toString();
+        return bookingArray;
     }
-    
+
     private JsonObject bookingToJsonObject(Booking b) {
         JsonArray passengerArray = new JsonArray();
-        for(Passenger p: b.getPassengers()){
+        for (Passenger p : b.getPassengers()) {
             JsonObject passengerJson = new JsonObject();
             passengerJson.addProperty("firstName", p.getFirstName());
             passengerJson.addProperty("lastName", p.getLastName());
             passengerArray.add(passengerJson);
         }
-        
+
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("date", b.getTravelDate());
         jsonObject.addProperty("destination", b.getDestination());
@@ -132,8 +126,20 @@ public class JsonHelper {
         jsonObject.addProperty("reserveeName", b.getReserveeName());
         jsonObject.addProperty("userName", b.getUser().getUserName());
         jsonObject.add("passengers", passengerArray);
-        
+
         return jsonObject;
+    }
+
+    public JsonObject getFlightNotFound() {
+        JsonObject jo = new JsonObject();
+        jo.addProperty("message", "We found no flights matching your search criteria");
+        return jo;
+    }
+
+    public JsonObject getNoBookings() {
+        JsonObject jo = new JsonObject();
+        jo.addProperty("message", "No bookings found");
+        return jo;
     }
 
 }
