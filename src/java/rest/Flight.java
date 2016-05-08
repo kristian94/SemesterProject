@@ -55,12 +55,13 @@ public class Flight {
     @Consumes("application/json")
     @Produces("application/json")
     public Response getFlights(String content) {
+        System.out.println(content);
+        JsonArray flights = rf.flightRequest(content);
+        //System.out.println(flights.toString());
         return Response
-                    .status(Response.Status.OK)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .header("Access-Control-Allow-Methods", "GET")
-                    .entity(rf.flightRequest(content).getAsString())
-                    .build();
+            .status(Response.Status.OK)
+            .entity(flights.toString())
+            .build();
     }
     
     

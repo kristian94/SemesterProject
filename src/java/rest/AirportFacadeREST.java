@@ -40,8 +40,8 @@ public class AirportFacadeREST {
         if (a != null) {
             return Response
                     .status(Response.Status.OK)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .header("Access-Control-Allow-Methods", "GET")
+//                    .header("Access-Control-Allow-Origin", "*")
+//                    .header("Access-Control-Allow-Methods", "GET")
                     .entity(jh.airportToJson(a))
                     .build();
         }
@@ -55,7 +55,7 @@ public class AirportFacadeREST {
         if (q != null) {
             return Response
                 .status(Response.Status.OK)
-                .header("Access-Control-Allow-Origin", "*")
+                //.header("Access-Control-Allow-Origin", "*")
                 //.header("Access-Control-Allow-Methods", "GET")
                 .entity(jh.airportsToJson(af.getAirportsByQuery(q)))
                 .build();
