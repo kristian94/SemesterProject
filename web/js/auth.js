@@ -122,7 +122,7 @@ angular.module('bonierSecurity', [])
 
 
 
-function initializeFromToken($scope, token, jwtHelper, authFactory) {
+function initializeFromToken($scope, token, jwtHelper, AuthFactory) {
     $scope.isAuthenticated = true;
     var tokenPayload = jwtHelper.decodeToken(token);
     $scope.username = tokenPayload.username;
@@ -136,11 +136,13 @@ function initializeFromToken($scope, token, jwtHelper, authFactory) {
             $scope.isUser = true;
         }
     });
+    AuthFactory.setUser({isAuthenticated:$scope.isAuthenticated,isAdmin:$scope.isAdmin,isUser:$scope.isUser,username:$scope.username});
 }
 
-function clearUserDetails($scope, authFactory) {
+function clearUserDetails($scope, AuthFactory) {
     $scope.username = "";
     $scope.isAuthenticated = false;
     $scope.isAdmin = false;
     $scope.isUser = false;
+    AuthFactory.setUser({isAuthenticated:$scope.isAuthenticated,isAdmin:$scope.isAdmin,isUser:$scope.isUser,username:$scope.username});
 }

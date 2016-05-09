@@ -37,32 +37,34 @@ public class Flight {
     RequestForwarder rf = new RequestForwarder();
     SearchFacade sf = new SearchFacade();
     JsonHelper jh = new JsonHelper();
-    
-    
-    
+
     /**
      * Creates a new instance of Flight
      */
     public Flight() {
-        
-        
-        
+
     }
 
-    
-    
     @POST
     @Consumes("application/json")
     @Produces("application/json")
     public Response getFlights(String content) {
         System.out.println(content);
         JsonArray flights = rf.flightRequest(content);
-        //System.out.println(flights.toString());
+        
+        sf.addSearch(jh.toSearch(content)); 
+        
+        if(flights.size() == 0){
+            return Response
+                    .status(Response.Status.NOT_FOUND)
+                    .entity(jh.getFlightNotFound().toString())
+                    .build();
+        }
+
         return Response
-            .status(Response.Status.OK)
-            .entity(flights.toString())
-            .build();
+                .status(Response.Status.OK)
+                .entity(flights.toString())
+                .build();
     }
-    
-    
+
 }

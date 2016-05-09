@@ -33,10 +33,8 @@ public class SearchEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long searchID;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date searchDate;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date travelDate;
+    private String searchDate;
+    private String travelDate;
     private String origin;
     private String destination;
     private int numberOfSeats;
@@ -70,21 +68,7 @@ public class SearchEntity implements Serializable {
         return "entity.Search[ id=" + searchID + " ]";
     }
     
-    public Date getSearchDate() {
-        return searchDate;
-    }
-
-    public void setSearchDate(Date searchDate) {
-        this.searchDate = searchDate;
-    }
-
-    public Date getTravelDate() {
-        return travelDate;
-    }
-
-    public void setTravelDate(Date date) {
-        this.travelDate = date;
-    }
+    
 
     public String getOrigin() {
         return origin;
@@ -116,6 +100,22 @@ public class SearchEntity implements Serializable {
 
     public void setSearchID(Long searchID) {
         this.searchID = searchID;
+    }
+
+    public String getSearchDate() {
+        return searchDate;
+    }
+
+    public void setSearchDate(String searchDate) {
+        this.searchDate = searchDate;
+    }
+
+    public String getTravelDate() {
+        return travelDate;
+    }
+
+    public void setTravelDate(String travelDate) {
+        this.travelDate = travelDate;
     }
     
 }

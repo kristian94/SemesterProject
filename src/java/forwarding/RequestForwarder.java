@@ -106,8 +106,16 @@ public class RequestForwarder {
             JsonObject json = (JsonObject) parser.parse(content);
             Airline a = af.getAirlineByName(json.get("airline").getAsString());
 
+            String reservation = "/reservation";
+            
             fullUrl.append(a.getUrl());
-            fullUrl.append("/reservation");
+            if (a.getUrl().contains("angularairline")) {
+                System.out.println("Angular Airline Detected, fixing url");
+                reservation = "/flightreservation";
+            }
+            fullUrl.append(reservation);
+            
+            
             fullUrl.append(("/" + json.get("flightID").getAsString()));
 
             Future<String> res = ex.submit(new ForwarderCallable(fullUrl.toString(), content, "POST"));
