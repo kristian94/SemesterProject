@@ -51,10 +51,10 @@
             <ul class="list-group">
                 <!--<div ng-repeat="airline in result | filter:as">
                 {{airline.airline}}-->
-                    <li class="list-group-item" ng-repeat="flight in result.flights | orderBy:orderProp | seatFilter:search.numberOfSeats | priceFilter:maxPrice | ttimeFilter:maxTime">
+                    <li class="list-group-item" ng-repeat="flight in result | orderBy:orderProp | seatFilter:search.numberOfSeats | priceFilter:maxPrice | ttimeFilter:maxTime">
                         <ul>
                             <li>AirlineName:
-                                {{result.airline}}
+                                {{flight.airline}}
                             </li>
                             <li>FlightID:
                                 {{flight.flightID}}</li>
