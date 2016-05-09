@@ -142,4 +142,22 @@ public class JsonHelper {
         return jo;
     }
 
+    public JsonObject getBadFlightRequest() {
+        JsonObject jo = new JsonObject();
+        jo.addProperty("message", "Incorrect input. Make sure everything is spelled correctly.");
+        return jo;
+    }
+
+    public JsonObject buildBadBookingRequest() {
+        JsonObject jo = new JsonObject();
+        jo.addProperty("message", "Incorrect input. Make sure everything is spelled correctly.");
+        return jo;
+    }
+
+    public JsonObject getNoFlightOrTicekts() {
+        JsonObject jo = new JsonObject();
+        jo.addProperty("message", "The FlightID does not exist, or there are not enough tickets to make the booking requested.");
+        return jo;
+    }
+
 }

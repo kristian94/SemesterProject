@@ -15,7 +15,7 @@ import javax.ws.rs.core.Response.Status;
  */
 public class ResponseBuilder {
     
-    
+    // Currently does nothing
     
     public static Response jsonToResponse(JsonObject json){
         

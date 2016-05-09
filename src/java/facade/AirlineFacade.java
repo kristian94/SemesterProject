@@ -87,4 +87,17 @@ public class AirlineFacade {
             em.close();
         }
     }
+
+    public Airline findAirlineByAirlineName(String airline) {
+        EntityManager em = emf.createEntityManager();
+        Airline a = null;
+        try{
+            a = (Airline) em.createNamedQuery("Airline.FindByName").setParameter("name", airline).getSingleResult();
+        }finally{
+            em.close();
+        }
+        return a;
+        
+        
+    }
 }

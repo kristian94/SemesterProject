@@ -22,6 +22,7 @@ import javax.persistence.Persistence;
 import org.junit.*;
 import security.PasswordStorage;
 import utility.JsonHelper;
+import utility.JsonValidator;
 
 /**
  *
@@ -102,6 +103,18 @@ public class JUnitTest {
         
     }
     
+    @Test
+    public void flightValidatorTest(){
+        JsonValidator jv = new JsonValidator();
+
+        JsonObject j = new JsonObject();
+        j.addProperty("origin", "CPH");
+        j.addProperty("date", "2016-05-09T00:00:00.000Z");
+        j.addProperty("numberOfSeats", 1);
+        j.addProperty("destination", "CPH");
+
+        System.out.println(jv.validateFlightRequest(j.toString()));
+    }
 
     @AfterClass
     public static void tearDownClass() {

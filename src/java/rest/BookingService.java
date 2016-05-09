@@ -27,6 +27,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import utility.JsonHelper;
+import utility.JsonValidator;
 
 /**
  * REST Web Service
@@ -40,6 +41,7 @@ public class BookingService {
     BookingFacade bf = new BookingFacade();
     UserFacade uf = new UserFacade();
     JsonHelper jh = new JsonHelper();
+    JsonValidator jv = new JsonValidator();
     Gson gson = new Gson();
     
     @Context
@@ -53,13 +55,30 @@ public class BookingService {
     @POST
     @Consumes("application/json")
     @Produces("application/json")
-    public String postBooking(String content){
+    public Response postBooking(String content){
+        content = jv.validateBookingRequest(content);
+        if(content.equals("")) 
+            return Response
+                    .status(Status.BAD_REQUEST)
+                    .entity(jh.buildBadBookingRequest().toString())
+                    .build();
+        
         User u = uf.getUserByUserName(jh.getUserNameFromJson(content));
         content = jh.addReserveeName(content, u);
-        String result = rf.bookingRequest(content).toString();
+        String result;
+        try{result = rf.bookingRequest(content).toString();
+        }catch(Exception e){
+            return Response
+                    .status(Status.NOT_FOUND)
+                    .entity(jh.getNoFlightOrTicekts().toString())
+                    .build();
+        }
         Booking b = jh.jsonToBooking(result);
         uf.addBooking(u, b);
-        return result;
+        return Response
+                .status(Status.OK)
+                .entity(result)
+                .build();
     }
     
     @RolesAllowed("Admin")
@@ -79,7 +98,7 @@ public class BookingService {
     @GET
     @Produces("application/json")
     @Path("/{userName}")
-    public Response getBookingByuser(@PathParam("userName") String userName){
+    public Response getBookingByUser(@PathParam("userName") String userName){
         User u = uf.getUserByUserName(userName);
         List<Booking> bookings = u.getBookings();
         JsonArray array = jh.bookingListToJson(bookings);

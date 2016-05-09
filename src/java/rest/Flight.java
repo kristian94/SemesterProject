@@ -22,6 +22,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.core.Response;
 import utility.JsonHelper;
+import utility.JsonValidator;
 
 /**
  * REST Web Service
@@ -37,7 +38,8 @@ public class Flight {
     RequestForwarder rf = new RequestForwarder();
     SearchFacade sf = new SearchFacade();
     JsonHelper jh = new JsonHelper();
-
+    JsonValidator jv = new JsonValidator();
+    
     /**
      * Creates a new instance of Flight
      */
@@ -49,9 +51,15 @@ public class Flight {
     @Consumes("application/json")
     @Produces("application/json")
     public Response getFlights(String content) {
-        System.out.println(content);
+        content = jv.validateBookingRequest(content);
+        if(content.equals("")){
+            return Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(jh.getBadFlightRequest())
+                    .build();
+                    
+        }
         JsonArray flights = rf.flightRequest(content);
-        
         sf.addSearch(jh.toSearch(content)); 
         
         if(flights.size() == 0){
