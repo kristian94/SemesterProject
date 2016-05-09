@@ -52,6 +52,7 @@ public class BookingService {
     @Consumes("application/json")
     @Produces("application/json")
     public String postBooking(String content){
+        System.out.println(content);
         User u = uf.getUserByUserName(jh.getUserNameFromJson(content));
         content = jh.addReserveeName(content, u);
         String result = rf.bookingRequest(content).toString();
