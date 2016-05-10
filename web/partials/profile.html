@@ -1,0 +1,24 @@
+<div class="container">
+	<div class="row">
+		<div class="col-sm-6">
+			<h1><span ng-bind="username"></span></h1>
+			<p>
+				Name: <span ng-bind="user.firstName + ' ' + user.lastName"></span>
+			</p>
+			<p>
+				Email: <span ng-bind="user.email"></span>
+			</p>
+			<p>
+				*Admin*: <span ng-bind="isAdmin"></span>
+			</p>
+		</div>
+		<div class="col-sm-6">
+			<h1>Bookings</h1>
+			<ul class="list-group">
+				<li class="list-group-item" ng-repeat="booking in bookings">
+					{{booking}}
+				</li>
+			</ul>
+		</div>
+	</div>
+</div>
