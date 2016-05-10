@@ -160,4 +160,35 @@ public class JsonHelper {
         return jo;
     }
 
+    public JsonObject getPasswordCouldNotBeStored() {
+        JsonObject jo = new JsonObject();
+        jo.addProperty("message", "Your password could not be stored.");
+        return jo;
+    }
+
+    public JsonObject getUserNameAlreadyExists() {
+        JsonObject jo = new JsonObject();
+        jo.addProperty("message", "UserName already exists.");
+        return jo;
+    }
+
+    public JsonObject getBadCreateUser() {
+        JsonObject jo = new JsonObject();
+        jo.addProperty("message", "Incorrect input. Make sure everything is spelled correctly");
+        return jo;
+        
+    }
+
+    public JsonObject userToJson(User u) {
+        JsonObject j = new JsonObject();
+        
+        j.addProperty("userName", u.getUserName());
+        j.addProperty("firstName", u.getFirstName());
+        j.addProperty("lastName", u.getLastName());
+        j.addProperty("email", u.getEmail());
+        j.addProperty("phone", u.getPhone());
+        
+        return j;
+    }
+
 }

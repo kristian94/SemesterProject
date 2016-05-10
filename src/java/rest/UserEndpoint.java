@@ -25,7 +25,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import security.PasswordStorage;
+import utility.JsonHelper;
+import utility.JsonValidator;
 
 /**
  * REST Web Service
@@ -37,6 +40,8 @@ public class UserEndpoint {
     
     UserFacade uf = new UserFacade();
     Gson gson = new Gson();
+    JsonValidator jv = new JsonValidator();
+    JsonHelper jh = new JsonHelper();
     
     @Context
     private UriInfo context;
@@ -46,22 +51,41 @@ public class UserEndpoint {
     
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public String createUser(String content) {
+    public Response createUser(String content) {
+        content = jv.validateUser(content);
+        if(content.equals("")){
+            return Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(jh.getBadCreateUser().toString())
+                    .build();
+        }
+        
+        
         User u = gson.fromJson(content, User.class);
         Role userRole = new Role("User");
         u.AddRole(userRole);
         if (uf.getUserByUserName(u.getUserName()) != null) {
-            return "userName already exists";
+            return Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(jh.getUserNameAlreadyExists().toString())
+                    .build();
         }
         try {
             u.setPassword(PasswordStorage.createHash(u.getPassword()));
         } catch (PasswordStorage.CannotPerformOperationException ex) {
             Logger.getLogger(UserEndpoint.class.getName()).log(Level.SEVERE, null, ex);
-            return "password storage error";
+            return Response
+                    .status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(jh.getPasswordCouldNotBeStored().toString())
+                    .build();
+//            return "password storage error";
         }
         //check if user already exist
         uf.persistUser(u);
-        return "ok"; //return json instead?
+        return Response
+                .status(Response.Status.OK)
+                .entity(jh.userToJson(u).toString())
+                .build();
     }
        
     @RolesAllowed("Admin")

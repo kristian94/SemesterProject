@@ -136,7 +136,7 @@ public class JsonValidator {
             }
 
             String userName = input.get("userName").getAsString();
-            if (isValidUserName(userName)) {
+            if (isValidExistingUserName(userName)) {
                 output.addProperty("userName", userName);
             } else {
                 isValid = false;
@@ -182,6 +182,76 @@ public class JsonValidator {
         }
     }
 
+    public String validateUser(String content) {
+        try {
+            boolean isValid = true;
+            JsonObject input = (JsonObject) parser.parse(content);
+            JsonObject output = new JsonObject();
+
+            String userName = input.get("userName").getAsString();
+            String firstName = input.get("firstName").getAsString();
+            String lastName = input.get("lastName").getAsString();
+            String phone = input.get("phone").getAsString();
+            String email = input.get("email").getAsString();
+            String password = input.get("password").getAsString();
+
+            if (isValidNewUserName(userName)) {
+                output.addProperty("userName", userName);
+            } else {
+                isValid = false;
+            }
+
+            if (isValidName(firstName)) {
+                output.addProperty("firstName", firstName);
+            } else {
+                isValid = false;
+            }
+
+            if (isValidName(lastName)) {
+                output.addProperty("lastName", lastName);
+            } else {
+                isValid = false;
+            }
+
+            if (isValidPhone(phone)) {
+                output.addProperty("phone", phone);
+            } else {
+                isValid = false;
+            }
+
+            if (isValidEmail(email)) {
+                output.addProperty("email", email);
+            } else {
+                isValid = false;
+            }
+
+            if (isValidPassword(password)) {
+                output.addProperty("password", password);
+            } else {
+                isValid = false;
+            }
+
+            if (!isValid) {
+                System.out.println("Validation failed");
+                return "";
+            }
+
+            System.out.println("User validated");
+            System.out.println(output.toString());
+            return output.toString();
+        } catch(NullPointerException npe){
+            System.out.println("NullPointer thrown - input missing");
+            return "";
+        } 
+        
+        catch (Exception e) {
+            System.out.println("Validation failed (an exception was thrown)");
+            System.out.println(e.getMessage());
+            return "";
+        }
+
+    }
+
     private boolean isValidIATA(String IATA) {
         boolean isValid = true;
         if (IATA.length() != 3) {
@@ -219,16 +289,15 @@ public class JsonValidator {
 
     private boolean isValidAirline(String airline) {
         boolean isValid = true;
-        try{
+        try {
             af.findAirlineByAirlineName(airline);
-        }catch(NoResultException nre){
-            
+        } catch (NoResultException nre) {
+
             isValid = false;
         }
         System.out.println("Airline valid: " + isValid);
         return isValid;
-        
-        
+
 //        boolean isValid = true;
 //        if (af.findAirlineByAirlineName(airline) == null) {
 //            isValid = false;
@@ -239,11 +308,23 @@ public class JsonValidator {
 
     private boolean isValidFlightID(String flightID) {
         boolean isValid = true;
+        if (flightID.length() < 1) {
+            isValid = false;
+        }
         System.out.println("FlightID valid: " + isValid);
         return isValid;
     }
 
-    private boolean isValidUserName(String userName) {
+    private boolean isValidNewUserName(String userName) {
+        boolean isValid = true;
+        if (userName.length() < 1) {
+            isValid = false;
+        }
+        System.out.println("UserName valid: " + isValid);
+        return isValid;
+    }
+
+    private boolean isValidExistingUserName(String userName) {
         boolean isValid = true;
         if (uf.getUserByUserName(userName) == null) {
             isValid = false;
@@ -273,12 +354,30 @@ public class JsonValidator {
         return isValid;
     }
 
+    private boolean isValidName(String name) {
+        boolean isValid = true;
+        if (name.length() < 1) {
+            isValid = false;
+        }
+        System.out.println("Name valid: " + isValid);
+        return isValid;
+    }
+
     private boolean isValidPassengerArray(JsonArray passengers) {
         boolean isValid = true;
         if (passengers.size() == 0) {
             isValid = false;
         }
         System.out.println("Passengers(array) valid: " + isValid);
+        return isValid;
+    }
+
+    private boolean isValidPassword(String password) {
+        boolean isValid = true;
+        if (password.length() < 7) {
+            isValid = false;
+        }
+        System.out.println("Password valid: " + isValid);
         return isValid;
     }
 

@@ -30,6 +30,7 @@ public class User implements Serializable, IUser {
     private String email;
     private String firstName;
     private String lastName;
+    private String phone;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Booking> bookings = new ArrayList();
 
@@ -119,6 +120,14 @@ public class User implements Serializable, IUser {
 
     public void setBookings(List<Booking> bookings) {
         this.bookings = bookings;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
     
     
