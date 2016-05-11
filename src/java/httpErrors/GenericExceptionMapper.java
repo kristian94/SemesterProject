@@ -1,10 +1,14 @@
 package httpErrors;
 
 
+import com.google.common.reflect.TypeToken;
 import javax.ws.rs.NotFoundException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import java.util.List;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -27,6 +31,7 @@ public class GenericExceptionMapper implements ExceptionMapper<Exception> {
     int statusCode = 500;
     errorDetail.addProperty("code", statusCode);
     errorDetail.addProperty("message", "An unexpected problem occured on the server."+ex.getMessage());
+    ex.printStackTrace();
     error.add("error", errorDetail);
     return Response.status(statusCode).entity(gson.toJson(error)).type(MediaType.APPLICATION_JSON).build();
   }

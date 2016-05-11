@@ -12,13 +12,16 @@ import entity.User;
 import facade.BookingFacade;
 import facade.UserFacade;
 import forwarding.RequestForwarder;
+import java.security.Principal;
 import java.util.List;
 import javax.annotation.security.RolesAllowed;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -26,6 +29,8 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.SecurityContext;
+import security.UserPrincipal;
 import utility.JsonHelper;
 
 /**
@@ -53,19 +58,34 @@ public class BookingService {
     @POST
     @Consumes("application/json")
     @Produces("application/json")
-    public String postBooking(String content){
+    public Response postBooking(String content){
         System.out.println(content);
         User u = uf.getUserByUserName(jh.getUserNameFromJson(content));
         content = jh.addReserveeName(content, u);
         String result = rf.bookingRequest(content).toString();
         Booking b = jh.jsonToBooking(result);
-        uf.addBooking(u, b);
-        return result;
+        bf.addBooking(u, b);
+        return Response
+                .status(Status.OK)
+                .entity(result)
+                .build();
     }
     
-    @RolesAllowed("Admin")
+    @DELETE
+    @Path("/{bookingID}")
+    @RolesAllowed({"Admin", "User"})
+    public Response deleteBooking(@PathParam("bookingID") String bookingID) {
+        System.out.println("booking id = " + bookingID);
+        if (bf.removeBooking(bookingID)) {
+            return Response.status(Status.OK).build();
+        }
+        return Response.status(Status.NOT_FOUND).build();
+    }
+    
     @GET
+    @Path("/admin/all")
     @Produces("application/json")
+    @RolesAllowed("Admin")
     public Response getBookings(){
         
         List<Booking> bookings = bf.getBookings();
@@ -79,18 +99,31 @@ public class BookingService {
     
     @GET
     @Produces("application/json")
-    @Path("/{userName}")
-    public Response getBookingByuser(@PathParam("userName") String userName){
-        User u = uf.getUserByUserName(userName);
+    @RolesAllowed({"User", "Admin"})
+    public Response getBookingByUser(@Context SecurityContext securityContext) {
+        UserPrincipal principal = (UserPrincipal) securityContext.getUserPrincipal();
+        String username = principal.getName();
+        User u = uf.getUserByUserName(username);
         List<Booking> bookings = u.getBookings();
-        JsonArray array = jh.bookingListToJson(bookings);
-        if(array.size() == 0){
-            return Response.status(Status.NOT_FOUND).entity(jh.getNoBookings().toString()).build();
+        if(bookings.isEmpty()){
+            return Response.status(Status.OK).entity(jh.getNoBookings().toString()).build();
         }
-        
+        JsonArray array = jh.bookingListToJson(bookings);
         return Response.status(Status.OK).entity(array.toString()).build();
     }
     
-    
+    @GET
+    @Produces("application/json")
+    @Path("/{username}")
+    @RolesAllowed("Admin")
+    public Response getBookingAdmin(@PathParam("username") String username) {
+        User u = uf.getUserByUserName(username);
+        List<Booking> bookings = u.getBookings();
+        if(bookings.isEmpty()){
+            return Response.status(Status.OK).entity(jh.getNoBookings().toString()).build();
+        }
+        JsonArray array = jh.bookingListToJson(bookings);
+        return Response.status(Status.OK).entity(array.toString()).build();
+    }
     
 }

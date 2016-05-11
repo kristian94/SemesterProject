@@ -7,6 +7,7 @@
 		<ul class="list-group">
 			<li class="list-group-item" ng-repeat="booking in bookings">
 				{{booking}}
+				<button type="button" ng-show="bookings.length" class="btn btn-danger" ng-click="deleteBooking(booking.bookingID)">Delete</button>
 			</li>
 		</ul>
 	</div>

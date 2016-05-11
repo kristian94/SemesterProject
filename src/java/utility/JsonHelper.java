@@ -17,12 +17,9 @@ import entity.Passenger;
 import entity.SearchEntity;
 import entity.User;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -118,6 +115,7 @@ public class JsonHelper {
         }
 
         JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("bookingID", b.getBookingID());
         jsonObject.addProperty("date", b.getTravelDate());
         jsonObject.addProperty("destination", b.getDestination());
         jsonObject.addProperty("flightNumber", b.getFlightNumber());
@@ -139,6 +137,16 @@ public class JsonHelper {
     public JsonObject getNoBookings() {
         JsonObject jo = new JsonObject();
         jo.addProperty("message", "No bookings found");
+        return jo;
+    }
+    
+    public JsonObject userToJsonObject(User u) {
+        JsonObject jo = new JsonObject();
+        jo.addProperty("username", u.getUserName());
+        jo.addProperty("firstName", u.getFirstName());
+        jo.addProperty("lastName", u.getLastName());
+        jo.addProperty("email", u.getEmail());
+        jo.addProperty("phone", u.getPhone());
         return jo;
     }
 

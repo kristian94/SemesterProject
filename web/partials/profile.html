@@ -9,7 +9,13 @@
 				Email: <span ng-bind="user.email"></span>
 			</p>
 			<p>
+				Phone: <span ng-bind="user.phone"></span>
+			</p>
+			<p>
 				*Admin*: <span ng-bind="isAdmin"></span>
+			</p>
+			<p>
+				<a href="#/profile/update">Change information &gt;</a>
 			</p>
 		</div>
 		<div class="col-sm-6">
@@ -17,6 +23,7 @@
 			<ul class="list-group">
 				<li class="list-group-item" ng-repeat="booking in bookings">
 					{{booking}}
+					<button ng-show="bookings.length" type="button" class="btn btn-danger" ng-click="deleteBooking(booking.bookingID)">Delete</button>
 				</li>
 			</ul>
 		</div>

@@ -28,6 +28,7 @@ public class User implements Serializable, IUser {
     private String userName;
     private String password;
     private String email;
+    private String phone;
     private String firstName;
     private String lastName;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -46,8 +47,6 @@ public class User implements Serializable, IUser {
         this.userName = userName;
         this.password = password;
     }
-
-    
     
     @Override
     public List<String> getRolesAsStrings() {
@@ -58,6 +57,14 @@ public class User implements Serializable, IUser {
         return rolesAsStrings;
     }
 
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+    
     public void AddRole(Role role) {
         roles.add(role);
         role.addUser(this);
@@ -111,6 +118,11 @@ public class User implements Serializable, IUser {
     public void addBooking(Booking booking) {
         booking.setUser(this);
         bookings.add(booking);
+    }
+    
+    public void removeBooking(Booking booking) {
+        booking.setUser(this);
+        bookings.remove(booking);
     }
     
     public List<Booking> getBookings() {

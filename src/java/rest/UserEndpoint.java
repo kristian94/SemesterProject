@@ -7,7 +7,6 @@ package rest;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import entity.Role;
 import entity.User;
@@ -19,13 +18,17 @@ import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import security.PasswordStorage;
+import security.UserPrincipal;
+import utility.JsonHelper;
 
 /**
  * REST Web Service
@@ -37,6 +40,7 @@ public class UserEndpoint {
     
     UserFacade uf = new UserFacade();
     Gson gson = new Gson();
+    JsonHelper jh = new JsonHelper();
     
     @Context
     private UriInfo context;
@@ -72,28 +76,29 @@ public class UserEndpoint {
         List<User> ul = uf.getUsers();
         JsonArray ja = new JsonArray();
         for (User u : ul) {
-            JsonObject jo = new JsonObject();
-            jo.addProperty("username", u.getUserName());
-            jo.addProperty("firstName", u.getFirstName());
-            jo.addProperty("lastName", u.getLastName());
-            jo.addProperty("email", u.getEmail());
-            ja.add(jo);
+            ja.add(jh.userToJsonObject(u));
         }
         return gson.toJson(ja);
     }
     
     @RolesAllowed({"Admin", "User"})
-    @GET
-    @Path("/{username}")
+    @PUT
+    @Path("/update")
     @Produces("application/json")
-    public String getUser(@PathParam("username") String username) {
-        User u = uf.getUserByUserName(username);
-        JsonObject jo = new JsonObject();
-        jo.addProperty("firstName", u.getFirstName());
-        jo.addProperty("lastName", u.getLastName());
-        jo.addProperty("email", u.getEmail());
-        return gson.toJson(jo);
-        // todo throw error 404
+    public Response updateUser(@Context SecurityContext securityContext, String content) {
+        UserPrincipal principal = (UserPrincipal) securityContext.getUserPrincipal();
+        User updatedUser = gson.fromJson(content, User.class);
+        User u = uf.updateUser(updatedUser, principal.getName());
+        return Response.status(Response.Status.OK).entity(gson.toJson(jh.userToJsonObject(u))).build();
+    }
+    
+    @RolesAllowed({"Admin", "User"})
+    @GET
+    @Produces("application/json")
+    public Response getUser(@Context SecurityContext securityContext) {
+        UserPrincipal principal = (UserPrincipal) securityContext.getUserPrincipal();
+        User u = uf.getUserByUserName(principal.getName());
+        return Response.status(Response.Status.OK).entity(gson.toJson(jh.userToJsonObject(u))).build();
     }
     
 }

@@ -31,6 +31,23 @@ public class UserFacade implements IUserFacade {
             em.close();
         }
     }
+    
+    public User updateUser(User updatedUser, String username) {
+        EntityManager em = emf.createEntityManager();
+        User u = em.find(User.class, username);
+        try {
+            em.getTransaction().begin();
+            // can't change username because its a primary key
+            u.setFirstName(updatedUser.getFirstName());
+            u.setLastName(updatedUser.getLastName());
+            u.setEmail(updatedUser.getEmail());
+            u.setPhone(updatedUser.getPhone());
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+        return u;
+    }
 
     public User getUserByUserName(String userName) {
         EntityManager em = emf.createEntityManager();
@@ -99,25 +116,6 @@ public class UserFacade implements IUserFacade {
             em.close();
         }
         return u;
-    }
-    
-    public void addBooking(User u, Booking b) {
-        EntityManager em = emf.createEntityManager();
-        try{
-            u.addBooking(b);
-            em.getTransaction().begin();
-            em.merge(u);
-            em.getTransaction().commit();
-        }catch(Exception e){
-            System.out.println("Error adding");
-            System.out.println("Booking: " + b.getFlightNumber() + ", " + b.getOrigin() + " to " + b.getDestination());
-            System.out.println("To User: " + u.getUserName());
-            e.printStackTrace();
-        }
-        finally{
-            em.close();
-        }
-        
     }
 
 }

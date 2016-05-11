@@ -38,9 +38,9 @@ app.controller('resultListCtrl', function($scope, $window, jwtHelper, searchResu
     };
 
     $scope.bookTickets = function() {
-            console.log("booking tickets");
-            //todo confirm modal?
-            //send post
+        console.log("booking tickets");
+        //todo confirm modal?
+        //send post
     };
 });
 
@@ -71,9 +71,14 @@ app.controller('formController', ['$scope', '$http', function($scope, $http, $wi
     $scope.create = function(user) {
         $('#registration .alert').remove();
         //validation
+        var re = /\D/
         if (user.userName == undefined || user.firstName == undefined || user.lastName == undefined || user.email == undefined || user.password.trim() === "" || user.passwordRep.trim() === "") {
             $('#registration .alert').remove();
             $('#registration').prepend('<div class="alert alert-danger id="message-box">' + errorGlyph + 'Please fill all the fields with a valid input</div>');
+            return;
+        } else if (re.test(user.phone)) {
+            $('#registration .alert').remove();
+            $('#registration').prepend('<div class="alert alert-danger id="message-box">' + errorGlyph + 'Please enter a valid phone number</div>');
             return;
         } else if (user.password.length < 6) {
             $('#registration .alert').remove();
@@ -90,13 +95,13 @@ app.controller('formController', ['$scope', '$http', function($scope, $http, $wi
         //delete user.passwordRep;
         $http.post('/SemesterProject/api/user', user)
             .success(function(data) {
-            var dataBool = data === "ok";
-            $('#registration .alert').remove();
-            $('#registration').prepend('<div class="alert ' + (dataBool ? 'alert-success' : 'alert-danger') + '" id="message-box">' + (dataBool ? successGlyph : errorGlyph) + (dataBool ? 'Account created' : 'Username taken') + '</div>');
-            if (dataBool) {
-                $('#createUserForm').remove();
-            }
-        });
+                var dataBool = data === "ok";
+                $('#registration .alert').remove();
+                $('#registration').prepend('<div class="alert ' + (dataBool ? 'alert-success' : 'alert-danger') + '" id="message-box">' + (dataBool ? successGlyph : errorGlyph) + (dataBool ? 'Account created' : 'Username taken') + '</div>');
+                if (dataBool) {
+                    $('#createUserForm').remove();
+                }
+            });
     };
 }]);
 
@@ -112,7 +117,7 @@ app.controller('profileCtrl', function($http, $window, jwtHelper, $scope) {
     $scope.user = {};
     $scope.bookings = [];
 
-    $http.get('api/user/' + $scope.username)
+    $http.get('api/user/')
         .success(function(data) {
             console.log(data);
             $scope.user = data;
@@ -121,17 +126,50 @@ app.controller('profileCtrl', function($http, $window, jwtHelper, $scope) {
             console.log(data);
             console.log("handle this error");
         });
-        /*
-        Get bookings for user
 
-        $http.get('api/booking')
+    $http.get('api/booking/')
         .success(function(data) {
+            $scope.bookings = data;
             console.log(data);
         })
         .error(function(data) {
             console.log(data);
         });
-        */
+
+    $scope.deleteBooking = function(bookingID) {
+        $http.delete('api/booking/' + bookingID)
+            .success(function() {
+                console.log("success");
+            }).error(function() {
+                console.log("error");
+            });
+    }
+});
+
+app.controller('profileUpdateCtrl', function($scope, $http) {
+    $scope.update = function(user) {
+        $('#registration .alert').remove();
+        //validation
+        var re = /\D/
+        if (user.firstName == undefined || user.lastName == undefined || user.email == undefined) {
+            $('#registration .alert').remove();
+            $('#registration').prepend('<div class="alert alert-danger id="message-box">' + errorGlyph + 'Please fill all the fields with a valid input</div>');
+            return;
+        } else if (re.test(user.phone)) {
+            $('#registration .alert').remove();
+            $('#registration').prepend('<div class="alert alert-danger id="message-box">' + errorGlyph + 'Please enter a valid phone number</div>');
+            return;
+        }
+        $http.put('api/user/update', user)
+            .success(function(data, status) {
+                var dataBool = status === 200;
+                $('#registration .alert').remove();
+                $('#registration').prepend('<div class="alert ' + (dataBool ? 'alert-success' : 'alert-danger') + '" id="message-box">' + (dataBool ? successGlyph : errorGlyph) + (dataBool ? 'Success' : 'Failed to update') + '</div>');
+                if (dataBool) {
+                    $('#createUserForm').remove();
+                }
+            });
+    };
 });
 
 app.controller('adminCtrl', function($http, $window, jwtHelper, $scope) {
@@ -156,12 +194,21 @@ app.controller('adminCtrl', function($http, $window, jwtHelper, $scope) {
 
 app.controller('adminDetailsCtrl', function($scope, $routeParams, $http) {
     $scope.username = $routeParams.username;
-    //todo get bookings the user in routeParams
-    $http.get('api/booking')
+    $scope.bookings = [];
+    $http.get('api/booking/' + $scope.username)
         .success(function(data) {
+            $scope.bookings = data;
             console.log(data);
         })
         .error(function(data) {
             console.log(data);
         });
+    $scope.deleteBooking = function(bookingID) {
+        $http.delete('api/booking/' + bookingID)
+            .success(function() {
+                console.log("success");
+            }).error(function() {
+                console.log("error");
+            });
+    }
 });

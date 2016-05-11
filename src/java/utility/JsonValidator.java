@@ -290,7 +290,7 @@ public class JsonValidator {
     private boolean isValidAirline(String airline) {
         boolean isValid = true;
         try {
-            af.findAirlineByAirlineName(airline);
+            af.getAirlineByName(airline);
         } catch (NoResultException nre) {
 
             isValid = false;

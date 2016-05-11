@@ -7,6 +7,7 @@ package facade;
 
 import deployment.ServerDeployment;
 import entity.Booking;
+import entity.User;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -58,7 +59,50 @@ public class BookingFacade {
         }
         return res;
     }
-
+    
+    public void addBooking(User u, Booking b) {
+        EntityManager em = emf.createEntityManager();
+        try{
+            u.addBooking(b);
+            em.getTransaction().begin();
+            em.merge(u);
+            em.getTransaction().commit();
+        }catch(Exception e){
+            System.out.println("Error adding");
+            System.out.println("Booking: " + b.getFlightNumber() + ", " + b.getOrigin() + " to " + b.getDestination());
+            System.out.println("To User: " + u.getUserName());
+            e.printStackTrace();
+        }
+        finally{
+            em.close();
+        }
+    }
+    
+    public boolean removeBooking(String id) {
+        EntityManager em = emf.createEntityManager();
+        Long bookingID = Long.parseLong(id);
+        Booking b = em.find(Booking.class, bookingID);
+        if (b == null) {
+            System.out.println("Could not find booking");
+            return false;
+        }
+        User u = b.getUser();
+        try{
+            em.getTransaction().begin();
+            u.removeBooking(b);
+            em.remove(b);
+            em.getTransaction().commit();
+        }catch(Exception e){
+            System.out.println("Error Deleting");
+            System.out.println("Booking: " + b.getFlightNumber() + ", " + b.getOrigin() + " to " + b.getDestination());
+            e.printStackTrace();
+            return false;
+        }
+        finally{
+            em.close();
+        }
+        return true;
+    }
     
 //    public List<Booking> getBookingsByFlight(int flightID) {
 //        EntityManager em = emf.createEntityManager();

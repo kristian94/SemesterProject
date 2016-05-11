@@ -21,6 +21,10 @@ bonierApp.config(function($routeProvider, $httpProvider) {
         templateUrl: 'partials/profile.html',
         controller: 'profileCtrl'
     }).
+    when('/profile/update', {
+        templateUrl: 'partials/update-profile.html',
+        controller: 'profileUpdateCtrl'
+    }).
     when('/admin', {
         templateUrl: 'partials/admin.html',
         controller: 'adminCtrl'
