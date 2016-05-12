@@ -29,6 +29,7 @@ import javax.ws.rs.core.SecurityContext;
 import security.PasswordStorage;
 import security.UserPrincipal;
 import utility.JsonHelper;
+import utility.JsonValidator;
 
 /**
  * REST Web Service
@@ -41,6 +42,7 @@ public class UserEndpoint {
     UserFacade uf = new UserFacade();
     Gson gson = new Gson();
     JsonHelper jh = new JsonHelper();
+    JsonValidator jv = new JsonValidator();
     
     @Context
     private UriInfo context;
@@ -50,22 +52,42 @@ public class UserEndpoint {
     
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public String createUser(String content) {
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response createUser(String content) {
+        JsonObject userJson = jv.validateUser(content);
+        JsonArray errors = userJson.get("errors").getAsJsonArray();
+        
+        if(errors.size() > 0){
+            return Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(userJson.toString())
+                    .build();
+        }
+        
         User u = gson.fromJson(content, User.class);
         Role userRole = new Role("User");
         u.AddRole(userRole);
         if (uf.getUserByUserName(u.getUserName()) != null) {
-            return "userName already exists";
+            return Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity("\"message\":\"userName already exists\"")
+                    .build();
         }
         try {
             u.setPassword(PasswordStorage.createHash(u.getPassword()));
         } catch (PasswordStorage.CannotPerformOperationException ex) {
             Logger.getLogger(UserEndpoint.class.getName()).log(Level.SEVERE, null, ex);
-            return "password storage error";
+            return Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity("\"message\":\"password storage error\"")
+                    .build();
         }
         //check if user already exist
         uf.persistUser(u);
-        return "ok"; //return json instead?
+        return Response
+                .status(Response.Status.OK)
+                .entity(gson.toJson(u))
+                .build();
     }
        
     @RolesAllowed("Admin")

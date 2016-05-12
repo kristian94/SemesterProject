@@ -7,6 +7,7 @@ package rest;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import entity.Booking;
 import entity.User;
 import facade.BookingFacade;
@@ -32,6 +33,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import security.UserPrincipal;
 import utility.JsonHelper;
+import utility.JsonValidator;
 
 /**
  * REST Web Service
@@ -44,6 +46,7 @@ public class BookingService {
     RequestForwarder rf = new RequestForwarder();
     BookingFacade bf = new BookingFacade();
     UserFacade uf = new UserFacade();
+    JsonValidator jv = new JsonValidator();
     JsonHelper jh = new JsonHelper();
     Gson gson = new Gson();
     
@@ -58,9 +61,18 @@ public class BookingService {
     @POST
     @Consumes("application/json")
     @Produces("application/json")
-    public Response postBooking(String content){
-        System.out.println(content);
-        User u = uf.getUserByUserName(jh.getUserNameFromJson(content));
+    public Response postBooking(@Context SecurityContext securityContext, String content){
+        JsonObject bookingJson = jv.validateBookingRequest(content);
+        JsonArray errors = bookingJson.get("errors").getAsJsonArray();
+        if(errors.size() > 0){
+            return Response
+                    .status(Status.BAD_REQUEST)
+                    .entity(bookingJson.toString())
+                    .build();
+        }
+        UserPrincipal principal = (UserPrincipal) securityContext.getUserPrincipal();
+        String username = principal.getName();
+        User u = uf.getUserByUserName(username);
         content = jh.addReserveeName(content, u);
         String result = rf.bookingRequest(content).toString();
         Booking b = jh.jsonToBooking(result);

@@ -45,7 +45,7 @@ public class RequestForwarder {
         List<Airline> airlines = af.getAirlines();
         List<String> airlineNames = new ArrayList();
         List<String> airlineUrls = new ArrayList();
-        
+
         System.out.println(urlEnd + "endd");
 
         for (Airline a : airlines) {
@@ -82,9 +82,8 @@ public class RequestForwarder {
                         }
                     } catch (Exception e) {
                         System.out.println("Array empty");
-                        
-                    }
 
+                    }
 
                 }
 
@@ -107,16 +106,18 @@ public class RequestForwarder {
             Airline a = af.getAirlineByName(json.get("airline").getAsString());
 
             String reservation = "/reservation";
-            
+
             fullUrl.append(a.getUrl());
             if (a.getUrl().contains("angularairline")) {
                 System.out.println("Angular Airline Detected, fixing url");
                 reservation = "/flightreservation";
+                fullUrl.append(reservation);
+            } else {
+                fullUrl.append(reservation);
+                fullUrl.append(("/" + json.get("flightID").getAsString()));
+
             }
-            fullUrl.append(reservation);
-            
-            
-            fullUrl.append(("/" + json.get("flightID").getAsString()));
+
 
             Future<String> res = ex.submit(new ForwarderCallable(fullUrl.toString(), content, "POST"));
             return parser.parse(res.get()).getAsJsonObject();
@@ -129,7 +130,7 @@ public class RequestForwarder {
     }
 
     private String buildFlightUrl(String json) {
-        
+
         StringBuilder urlEnd = new StringBuilder();
         JsonObject jsonOb = (JsonObject) parser.parse(json);
         urlEnd.append("/flights");
@@ -137,12 +138,11 @@ public class RequestForwarder {
         if (jsonOb.get("destination") != null) {
             urlEnd.append("/" + jsonOb.get("destination").getAsString());
         }
-        
+
         urlEnd.append(("/" + jsonOb.get("date").getAsString().replace("\"", ""))); // .replace() - the date is sent with quotes for some reason
         System.out.println("Her");
         urlEnd.append(("/" + jsonOb.get("numberOfSeats").getAsString()));
-        
-        
+
         return urlEnd.toString();
     }
 

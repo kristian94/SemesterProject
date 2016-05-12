@@ -9,6 +9,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.stream.MalformedJsonException;
 import facade.AirlineFacade;
 import facade.UserFacade;
 import java.text.DateFormat;
@@ -24,370 +25,279 @@ import javax.persistence.NoResultException;
  */
 public class JsonValidator {
 
-    AirlineFacade af = new AirlineFacade();
-    UserFacade uf = new UserFacade();
-    JsonParser parser = new JsonParser();
-    DateFormat df;
-    DateFormat sdfISO = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    private AirlineFacade af = new AirlineFacade();
+    private UserFacade uf = new UserFacade();
+    private JsonParser parser = new JsonParser();
+    private DateFormat df;
+    private DateFormat sdfISO = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    private static JsonArray errors;
+    private static boolean hasDest;
+    private static final String[] flightProperties = {"origin", "destination", "date", "numberOfSeats"};
+    private static final String[] bookingProperties = {"airline", "flightID", "numberOfSeats", "userName", "reservePhone", "reserveeEmail", "passengers"};
+    private static final String[] userProperties = {"firstName", "lastName", "userName", "email", "phone", "password"};
+    private static final String[] passengerProperties = {"firstName", "lastName"};
+    private static final char[] validPhoneChars = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '(', ')', '+'};
 
     public static void main(String[] args) {
         JsonValidator jv = new JsonValidator();
 
-        JsonObject booking = new JsonObject();
-        JsonArray passengers = new JsonArray();
-        JsonObject p1 = new JsonObject();
-        JsonObject p2 = new JsonObject();
+//        JsonObject flight = new JsonObject();
+//        
+//        flight.addProperty("origin", "CPH");
+//        flight.addProperty("date", "2016-05-13T00:00:00.000Z");
+//        flight.addProperty("numberOfSeats", 2);
+//        
+//        System.out.println(jv.validateFlightRequest(flight.toString()).toString());
+//        JsonObject booking = new JsonObject();
+//        JsonArray passengers = new JsonArray();
+//        JsonObject p1 = new JsonObject();
+//        JsonObject p2 = new JsonObject();
+//
+//        p1.addProperty("firstName", "Bob");
+//        p1.addProperty("lastName", "Ross");
+//        p2.addProperty("firstName", "Jane");
+//        p2.addProperty("lastName", "Ross");
+//
+//        passengers.add(p1);
+//        passengers.add(p2);
+//
+//        booking.addProperty("airline", "Bonier");
+//        booking.addProperty("flightID", "asdsa");
+//        booking.addProperty("numberOfSeats", 1);
+//        booking.addProperty("userName", "user");
+//        booking.addProperty("reservePhone", "1231a3");
+//        booking.addProperty("reserveeEmail", "mail@mail.com");
+//        booking.add("passengers", passengers);
+//
+//        System.out.println(jv.validateBookingRequest(booking.toString()));
+        JsonObject user = new JsonObject();
 
-        p1.addProperty("firstName", "Bob");
-        p1.addProperty("lastName", "Ross");
-        p2.addProperty("firstName", "Jane");
-        p2.addProperty("lastName", "Ross");
+        user.addProperty("firstName", "Bob");
+        user.addProperty("lastName", "Ross");
+        user.addProperty("userName", "bobross2");
+        user.addProperty("email", "bob@ross.dk");
+        user.addProperty("phone", "1234-333");
+        user.addProperty("password", "secretbob");
 
-        passengers.add(p1);
-        passengers.add(p2);
+        System.out.println(jv.validateUser(user.toString()).toString());
 
-        booking.addProperty("airline", "Bonier");
-        booking.addProperty("flightID", "345871472357924");
-        booking.addProperty("numberOfSeats", 2);
-        booking.addProperty("userName", "user");
-        booking.addProperty("reservePhone", "1231231");
-        booking.addProperty("reserveeEmail", "mail@mail.com");
-        booking.add("passengers", passengers);
+    }
 
-        System.out.println(jv.validateBookingRequest(booking.toString()));
+    private void reset() {
+        errors = new JsonArray();
+        hasDest = true;
+    }
+
+    private JsonObject addProperties(String[] propertyNames, JsonObject input) {
+        JsonObject output = new JsonObject();
+
+        for (String s : propertyNames) {
+            try {
+                if (s.equals("passengers")) {
+                    output.add(s, input.get(s).getAsJsonArray());
+                } else if (s.equals("numberOfSeats")) {
+                    output.addProperty(s, input.get(s).getAsInt());
+                } else {
+                    output.addProperty(s, input.get(s).getAsString());
+                }
+            } catch (NullPointerException np) {
+                if (s.equals("destination")) {
+                    hasDest = false;
+                } else {
+                    errors.add("Property missing (" + s + ")");
+                }
+            } catch (Exception e) {
+                errors.add("Error parsing property (" + s + ")");
+            }
+
+        }
+
+        return output;
     }
 
     // Returns an empty String (not null) if invalid FlightRequest
-    public String validateFlightRequest(String json) {
-        try {
-            JsonObject input = (JsonObject) parser.parse(json);
-            JsonObject output = new JsonObject();
-            boolean isValid = true;
+    public JsonObject validateFlightRequest(String input) {
+        reset();
+        JsonObject result = new JsonObject();
+        JsonObject output = addProperties(flightProperties, (JsonObject) parser.parse(input));
 
-            String origin = input.get("origin").getAsString();
-            if (isValidIATA(origin)) {
-                output.addProperty("origin", origin);
-            } else {
-                isValid = false;
-            }
-
-            String date = input.get("date").getAsString();
-            if (isValidDate(date)) {
-                output.addProperty("date", date);
-            } else {
-                isValid = false;
-            }
-
-            int numberOfSeats = input.get("numberOfSeats").getAsInt();
-            if (isValidNOS(numberOfSeats)) {
-                output.addProperty("numberOfSeats", numberOfSeats);
-            } else {
-                isValid = false;
-            }
-
-            try {
-                String destination = input.get("destination").getAsString();
-                if (isValidIATA(destination) && !destination.equals(origin)) {
-                    output.addProperty("destination", destination);
-                } else {
-                    isValid = false;
-                }
-            } catch (NullPointerException e) {
-                System.out.println("No Destination. Proceeding...");
-            }
-
-            if (isValid) {
-                System.out.println("Flight request validated");
-                return output.toString();
-            }
-            return "";
-        } catch (Exception e) {
-            System.out.println("Flight Request validation failed");
-            e.printStackTrace();
-            return "";
+        if (errors.size() > 0) {
+            result.add("flightRequest", output);
+            result.add("errors", errors);
+            return result;
         }
+
+        validateIATA(output.get("origin").getAsString());
+        validateDate(output.get("date").getAsString());
+        validateNumberOfSeats(output.get("numberOfSeats").getAsInt());
+        if (hasDest) {
+            validateIATA(output.get("destination").getAsString());
+        }
+
+        result.add("flightRequest", output);
+        result.add("errors", errors);
+
+        return result;
     }
 
-    public String validateBookingRequest(String json) {
-        try {
-            JsonObject input = (JsonObject) parser.parse(json);
-            JsonObject output = new JsonObject();
-            boolean isValid = true;
-
-            String airline = input.get("airline").getAsString();
-            if (isValidAirline(airline)) {
-                output.addProperty("airline", airline);
-            } else {
-                isValid = false;
-            }
-
-            String flightID = input.get("flightID").getAsString();
-            if (isValidFlightID(flightID)) {
-                output.addProperty("flightID", flightID);
-            } else {
-                isValid = false;
-            }
-
-            int numberOfSeats = input.get("numberOfSeats").getAsInt();
-            if (isValidNOS(numberOfSeats)) {
-                output.addProperty("numberOfSeats", numberOfSeats);
-            } else {
-                isValid = false;
-            }
-
-            String userName = input.get("userName").getAsString();
-            if (isValidExistingUserName(userName)) {
-                output.addProperty("userName", userName);
-            } else {
-                isValid = false;
-            }
-
-            String reservePhone = input.get("reservePhone").getAsString();
-            if (isValidPhone(reservePhone)) {
-                output.addProperty("reservePhone", reservePhone);
-            } else {
-                isValid = false;
-            }
-
-            String reserveeEmail = input.get("reserveeEmail").getAsString();
-            if (isValidEmail(reserveeEmail)) {
-                output.addProperty("reserveeEmail", reserveeEmail);
-            } else {
-                isValid = false;
-            }
-
-            JsonArray passengers = input.get("passengers").getAsJsonArray();
-            if (isValidPassengerArray(passengers)) {
-                JsonArray validatedArray = new JsonArray();
-                for (JsonElement j : passengers) {
-                    JsonObject jo = j.getAsJsonObject();
-                    jo = validatePassenger(jo);
-                    validatedArray.add(jo);
-                }
-                output.add("passengers", validatedArray);
-            } else {
-                isValid = false;
-            }
-
-            if (isValid) {
-                System.out.println("Booking validated");
-                return output.toString();
-            } else {
-                return "";
-            }
-        } catch (Exception e) {
-            System.out.println("Booking validation failed");
-            e.printStackTrace();
-            return "";
-        }
-    }
-
-    public String validateUser(String content) {
-        try {
-            boolean isValid = true;
-            JsonObject input = (JsonObject) parser.parse(content);
-            JsonObject output = new JsonObject();
-
-            String userName = input.get("userName").getAsString();
-            String firstName = input.get("firstName").getAsString();
-            String lastName = input.get("lastName").getAsString();
-            String phone = input.get("phone").getAsString();
-            String email = input.get("email").getAsString();
-            String password = input.get("password").getAsString();
-
-            if (isValidNewUserName(userName)) {
-                output.addProperty("userName", userName);
-            } else {
-                isValid = false;
-            }
-
-            if (isValidName(firstName)) {
-                output.addProperty("firstName", firstName);
-            } else {
-                isValid = false;
-            }
-
-            if (isValidName(lastName)) {
-                output.addProperty("lastName", lastName);
-            } else {
-                isValid = false;
-            }
-
-            if (isValidPhone(phone)) {
-                output.addProperty("phone", phone);
-            } else {
-                isValid = false;
-            }
-
-            if (isValidEmail(email)) {
-                output.addProperty("email", email);
-            } else {
-                isValid = false;
-            }
-
-            if (isValidPassword(password)) {
-                output.addProperty("password", password);
-            } else {
-                isValid = false;
-            }
-
-            if (!isValid) {
-                System.out.println("Validation failed");
-                return "";
-            }
-
-            System.out.println("User validated");
-            System.out.println(output.toString());
-            return output.toString();
-        } catch(NullPointerException npe){
-            System.out.println("NullPointer thrown - input missing");
-            return "";
-        } 
+    public JsonObject validateBookingRequest(String input) {
+        reset();
+        JsonObject result = new JsonObject();
+        JsonObject output = addProperties(bookingProperties, (JsonObject) parser.parse(input));
         
-        catch (Exception e) {
-            System.out.println("Validation failed (an exception was thrown)");
-            System.out.println(e.getMessage());
-            return "";
+        if (errors.size() > 0) {
+            result.add("booking", output);
+            result.add("errors", errors);
+            return result;
         }
 
+        validateAirline(output.get("airline").getAsString());
+        validateFlightID(output.get("flightID").getAsString());
+        validateNumberOfSeats(output.get("numberOfSeats").getAsInt());
+        validateExistingUserName(output.get("userName").getAsString());
+        validatePhone(output.get("reservePhone").getAsString());
+        validateEmail(output.get("reserveeEmail").getAsString());
+        validatePassengerArray(output.get("passengers").getAsJsonArray());
+
+        result.add("booking", output);
+        result.add("errors", errors);
+
+        return result;
     }
 
-    private boolean isValidIATA(String IATA) {
-        boolean isValid = true;
-        if (IATA.length() != 3) {
-            return false;
+    public JsonObject validateUser(String input) {
+        reset();
+        JsonObject result = new JsonObject();
+        JsonObject output = addProperties(userProperties, (JsonObject) parser.parse(input));
+
+        if (errors.size() > 0) {
+            result.add("user", output);
+            result.add("errors", errors);
+            return result;
         }
-        System.out.println("IATA valid: " + isValid);
-        return isValid;
+
+        validateName(output.get("firstName").getAsString());
+        validateName(output.get("lastName").getAsString());
+        validateNewUserName(output.get("userName").getAsString());
+        validateEmail(output.get("email").getAsString());
+        validatePhone(output.get("phone").getAsString());
+        validatePassword(output.get("password").getAsString());
+
+        result.add("user", output);
+        result.add("errors", errors);
+
+        return result;
     }
 
-    private boolean isValidNOS(int nos) {
-        boolean isValid = true;
+    private void validateIATA(String IATA) {
+        if (IATA.length() == 0) {
+            errors.add("Airport/IATA missing");
+        } else if (IATA.length() != 3) {
+            errors.add("Invalid Airport Code (" + IATA + ")");
+        }
+    }
+
+    private void validateNumberOfSeats(int nos) {
         if (nos < 1) {
-            isValid = false;
+            errors.add("Ìnvalid number of seats (" + nos + ")");
         }
-
-        System.out.println("NOS valid: " + isValid);
-        return isValid;
     }
 
-    private boolean isValidDate(String date) {
-        boolean isValid = true;
+    private void validateDate(String date) {
         try {
 
             Date d = sdfISO.parse(date);
             if (d.before(getYesterdaysDate())) {
-                isValid = false;
+                errors.add("Invalid date (" + date + "). Unfortunately, we do not support time travel");
             }
-
         } catch (ParseException e) {
-            isValid = false;
+            errors.add("Unparseable date (" + date + "). Make sure your date is in the correct format (yyyy-MM-dd'T'HH:mm:ss.SSS'Z')");
         }
-        System.out.println("Date valid: " + isValid);
-        return isValid;
     }
 
-    private boolean isValidAirline(String airline) {
-        boolean isValid = true;
+    private void validateAirline(String airline) {
         try {
             af.getAirlineByName(airline);
         } catch (NoResultException nre) {
 
-            isValid = false;
+            errors.add("The airline entered (" + airline + ") does not exist in our database");
         }
-        System.out.println("Airline valid: " + isValid);
-        return isValid;
-
-//        boolean isValid = true;
-//        if (af.findAirlineByAirlineName(airline) == null) {
-//            isValid = false;
-//        }
-//        System.out.println("Airline valid: " + isValid);
-//        return isValid;
     }
 
-    private boolean isValidFlightID(String flightID) {
-        boolean isValid = true;
+    private void validateFlightID(String flightID) {
         if (flightID.length() < 1) {
-            isValid = false;
+            errors.add("flightID missing");
         }
-        System.out.println("FlightID valid: " + isValid);
-        return isValid;
     }
 
-    private boolean isValidNewUserName(String userName) {
-        boolean isValid = true;
+    private void validateNewUserName(String userName) {
         if (userName.length() < 1) {
-            isValid = false;
+            errors.add("Username missing");
         }
-        System.out.println("UserName valid: " + isValid);
-        return isValid;
     }
 
-    private boolean isValidExistingUserName(String userName) {
-        boolean isValid = true;
-        if (uf.getUserByUserName(userName) == null) {
-            isValid = false;
+    private void validateExistingUserName(String userName) {
+        if (userName.length() < 1) {
+            errors.add("Username missing");
+        } else if (uf.getUserByUserName(userName) == null) {
+            errors.add("User (" + userName + ") does not exist in our database. Make sure you input an existing user");
         }
-        System.out.println("userName valid: " + isValid);
-        return isValid;
     }
 
-    private boolean isValidPhone(String phone) {
-        boolean isValid = true;
+    private void validatePhone(String phone) {
         if (phone.length() < 1) {
-            isValid = false;
+            errors.add("Phone number missing");
+        } else if (!phoneHasOnlyValidChars(phone)) {
+            errors.add("Phone number (" + phone + ") contains invalid characters. Phone numbers can only contain: " + charArrayToString(validPhoneChars));
         }
-        System.out.println("Phone valid: " + isValid);
-        return isValid;
     }
 
-    private boolean isValidEmail(String email) {
-        boolean isValid = true;
-        if (!email.contains("@")) {
-            isValid = false;
+    private void validateEmail(String email) {
+        if (email.length() == 0) {
+            errors.add("Email missing");
+        } else if (!email.contains("@")) {
+            errors.add("Invalid email (" + email + "). An email needs to contain both of the following characters: '@' '.'");
+        } else if (!email.contains(".")) {
+            errors.add("Invalid email (" + email + "). An email needs to contain both of the following characters: '@' '.'");
         }
-        if (!email.contains(".")) {
-            isValid = false;
-        }
-        System.out.println("Email valid: " + isValid);
-        return isValid;
     }
 
-    private boolean isValidName(String name) {
-        boolean isValid = true;
+    private void validateName(String name) {
         if (name.length() < 1) {
-            isValid = false;
+            errors.add("Name missing");
         }
-        System.out.println("Name valid: " + isValid);
-        return isValid;
     }
 
-    private boolean isValidPassengerArray(JsonArray passengers) {
-        boolean isValid = true;
+    private void validatePassengerName(String name) {
+        if (name.length() < 1) {
+            errors.add("Name missing (Passenger)");
+        }
+    }
+
+    private void validatePassengerArray(JsonArray passengers) {
+
         if (passengers.size() == 0) {
-            isValid = false;
+            errors.add("No passengers given. Make sure you enter at least one passenger.");
+        } else {
+            for (JsonElement e : passengers) {
+                validatePassenger(e.getAsJsonObject());
+            }
         }
-        System.out.println("Passengers(array) valid: " + isValid);
-        return isValid;
     }
 
-    private boolean isValidPassword(String password) {
-        boolean isValid = true;
-        if (password.length() < 7) {
-            isValid = false;
+    private void validatePassword(String password) {
+        if (password.length() < 6) {
+            errors.add("Password too short. Make sure the password you enter is at least 6 characters.");
         }
-        System.out.println("Password valid: " + isValid);
-        return isValid;
     }
 
     private JsonObject validatePassenger(JsonObject input) {
-        JsonObject output = new JsonObject();
-        String firstName = input.get("firstName").getAsString();
-        String lastName = input.get("lastName").getAsString();
+        JsonObject output = addProperties(passengerProperties, input);
 
-        output.addProperty("firstName", firstName);
-        output.addProperty("lastName", lastName);
+        if (errors.size() == 0) {
+            validatePassengerName(output.get("firstName").getAsString());
+            validatePassengerName(output.get("lastName").getAsString());
+        }
 
         return output;
     }
@@ -400,6 +310,31 @@ public class JsonValidator {
         c.set(Calendar.SECOND, 0);
         System.out.println(c.getTime());
         return c.getTime();
+    }
+
+    private boolean phoneHasOnlyValidChars(String phone) {
+
+        for (int i = 0; i < phone.length(); i++) {
+            boolean valid = false;
+            char c = phone.charAt(i);
+            for (char phoneChar : validPhoneChars) {
+                if (c == phoneChar) {
+                    valid = true;
+                }
+            }
+            if (!valid) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private String charArrayToString(char[] chars) {
+        String result = "";
+        for (int i = 0; i < chars.length; i++) {
+            result += chars[i] + "  ";
+        }
+        return result;
     }
 
 }
