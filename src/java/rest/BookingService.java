@@ -62,21 +62,25 @@ public class BookingService {
     @Consumes("application/json")
     @Produces("application/json")
     public Response postBooking(@Context SecurityContext securityContext, String content){
-        JsonObject bookingJson = jv.validateBookingRequest(content);
-        JsonArray errors = bookingJson.get("errors").getAsJsonArray();
+        JsonObject validatedBookingRequest = jv.validateBookingRequest(content);
+        JsonArray errors = validatedBookingRequest.get("errors").getAsJsonArray();
+        JsonObject booking = validatedBookingRequest.get("booking").getAsJsonObject();
         if(errors.size() > 0){
             return Response
                     .status(Status.BAD_REQUEST)
-                    .entity(bookingJson.toString())
+                    .entity(validatedBookingRequest.toString())
                     .build();
         }
+        validatedBookingRequest = jh.addNumberOfSeatsToBooking(booking);
+        content = booking.toString();
         UserPrincipal principal = (UserPrincipal) securityContext.getUserPrincipal();
-        String username = principal.getName();
+//        String username = principal.getName();
+        String username = "user";
         User u = uf.getUserByUserName(username);
         content = jh.addReserveeName(content, u);
         JsonObject result = rf.bookingRequest(content);
 //        System.out.println(result.toString());
-        String airline = bookingJson.get("booking").getAsJsonObject().get("airline").getAsString();
+        String airline = booking.get("airline").getAsString();
 //        String result = rf.bookingRequest(content).toString();
         result.addProperty("airline", airline);
         Booking b = jh.jsonToBooking(result.toString());

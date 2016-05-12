@@ -151,4 +151,10 @@ public class JsonHelper {
         jo.addProperty("phone", u.getPhone());
         return jo;
     }
+
+    public JsonObject addNumberOfSeatsToBooking(JsonObject bookingJson) {
+        JsonArray passengers = bookingJson.get("passengers").getAsJsonArray();
+        bookingJson.addProperty("numberOfSeats", passengers.size());
+        return bookingJson;
+    }
 }

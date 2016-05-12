@@ -33,7 +33,7 @@ public class JsonValidator {
     private static JsonArray errors;
     private static boolean hasDest;
     private static final String[] flightProperties = {"origin", "destination", "date", "numberOfSeats"};
-    private static final String[] bookingProperties = {"airline", "flightID", "numberOfSeats", "userName", "reservePhone", "reserveeEmail", "passengers"};
+    private static final String[] bookingProperties = {"airline", "flightID", "reservePhone", "reserveeEmail", "passengers"};
     private static final String[] userProperties = {"firstName", "lastName", "userName", "email", "phone", "password"};
     private static final String[] passengerProperties = {"firstName", "lastName"};
     private static final char[] validPhoneChars = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '(', ')', '+'};
@@ -153,8 +153,6 @@ public class JsonValidator {
 
         validateAirline(output.get("airline").getAsString());
         validateFlightID(output.get("flightID").getAsString());
-        validateNumberOfSeats(output.get("numberOfSeats").getAsInt());
-        validateExistingUserName(output.get("userName").getAsString());
         validatePhone(output.get("reservePhone").getAsString());
         validateEmail(output.get("reserveeEmail").getAsString());
         validatePassengerArray(output.get("passengers").getAsJsonArray());
