@@ -50,6 +50,9 @@ public class Booking implements Serializable {
     private String origin;
     private String destination;
     private String reserveeName;
+    private double totalPrice;
+    private String airline;
+    
     private int flightTimeInMinutes;
     
 //    @OneToMany(cascade = CascadeType.PERSIST)
@@ -163,6 +166,22 @@ public class Booking implements Serializable {
 
     public void setTravelDate(String travelDate) {
         this.travelDate = travelDate;
+    }
+
+    public double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public String getAirline() {
+        return airline;
+    }
+
+    public void setAirline(String airline) {
+        this.airline = airline;
     }
 
 }

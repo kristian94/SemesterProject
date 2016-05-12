@@ -61,6 +61,8 @@ public class JsonHelper {
         b.setOrigin(json.get("origin").getAsString());
         b.setDestination(json.get("destination").getAsString());
         b.setFlightTimeInMinutes(json.get("flightTime").getAsInt());
+        b.setAirline(json.get("airline").getAsString());
+//        b.setTotalPrice(json.get("totalPrice").getAsDouble());
         b.setReserveeName(json.get("reserveeName").getAsString());
         b.setFlightNumber(json.get("flightNumber").getAsString());
         JsonArray passengers = json.get("passengers").getAsJsonArray();
@@ -149,5 +151,4 @@ public class JsonHelper {
         jo.addProperty("phone", u.getPhone());
         return jo;
     }
-
 }

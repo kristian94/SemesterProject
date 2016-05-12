@@ -71,15 +71,20 @@ public class BookingService {
                     .build();
         }
         UserPrincipal principal = (UserPrincipal) securityContext.getUserPrincipal();
-        String username = principal.getName();
+//        String username = principal.getName();
+        String username = "user";
         User u = uf.getUserByUserName(username);
         content = jh.addReserveeName(content, u);
-        String result = rf.bookingRequest(content).toString();
-        Booking b = jh.jsonToBooking(result);
+        JsonObject result = rf.bookingRequest(content);
+        System.out.println(result.toString());
+        String airline = bookingJson.get("booking").getAsJsonObject().get("airline").getAsString();
+//        String result = rf.bookingRequest(content).toString();
+        result.addProperty("airline", airline);
+        Booking b = jh.jsonToBooking(result.toString());
         bf.addBooking(u, b);
         return Response
                 .status(Status.OK)
-                .entity(result)
+                .entity(result.toString())
                 .build();
     }
     
