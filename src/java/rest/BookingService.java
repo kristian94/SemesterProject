@@ -74,8 +74,8 @@ public class BookingService {
         validatedBookingRequest = jh.addNumberOfSeatsToBooking(booking);
         content = booking.toString();
         UserPrincipal principal = (UserPrincipal) securityContext.getUserPrincipal();
-//        String username = principal.getName();
-        String username = "user";
+        String username = principal.getName();
+//        String username = "user";
         User u = uf.getUserByUserName(username);
         content = jh.addReserveeName(content, u);
         JsonObject result = rf.bookingRequest(content);
